@@ -1,0 +1,228 @@
+# =============================================================================
+# ConversX — docker-compose.yml
+# Local-first development stack (Gate A — §18.2)
+#
+# Total resource budget: ~2.0 CPUs, ~9.0 GB RAM across all containers.
+# This mimics the Oracle Always Free A1 target (2 OCPU, 12 GB) with the
+# Gate A local limit of 9 GB (§18.2).
+#
+# Usage:
+#   docker compose --env-file .env up -d
+#   docker compose logs -f api
+#
+# Model weights live in named volumes (never in the image).
+# All containers run as non-root where possible.
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 16
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: conversx-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-conversx}
+      POSTGRES_USER: ${POSTGRES_USER:-conversx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-conversx}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.20"
+          memory: 640M
+        reservations:
+          memory: 256M
+
+  # ---------------------------------------------------------------------------
+  # Redis 7 — RQ broker + AOF persistence
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: conversx-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 192mb
+      --maxmemory-policy noeviction
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.10"
+          memory: 224M
+        reservations:
+          memory: 64M
+
+  # ---------------------------------------------------------------------------
+  # FastAPI — API server
+  # ---------------------------------------------------------------------------
+  api:
+    image: ${GHCR_IMAGE:-conversx/backend}:${IMAGE_TAG:-local}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: conversx-api
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
+    env_file: .env
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+    ports:
+      - "127.0.0.1:8000:8000"    # local access only; Tunnel exposes this in production
+    volumes:
+      - audio_tmp:/tmp/conversx-audio   # temp audio files (purged after STT)
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8000/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 1536M
+        reservations:
+          memory: 512M
+
+  # ---------------------------------------------------------------------------
+  # RQ Heavy Worker — concurrency 1; processes stt and llm queues sequentially
+  # ---------------------------------------------------------------------------
+  worker:
+    image: ${GHCR_IMAGE:-conversx/backend}:${IMAGE_TAG:-local}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: conversx-worker
+    restart: unless-stopped
+    command: rq worker --with-scheduler --queue-class rq.Queue stt llm
+    env_file: .env
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      OLLAMA_BASE_URL: http://ollama:11434
+    volumes:
+      - audio_tmp:/tmp/conversx-audio
+      - whisper_models:/models/whisper
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 4096M     # must hold faster-whisper + Detoxify (STT job) OR Ollama overhead
+        reservations:
+          memory: 512M
+
+  # ---------------------------------------------------------------------------
+  # Ollama — local LLM server
+  # Model chosen at Gate A; pulled into named volume, never in image.
+  # ---------------------------------------------------------------------------
+  ollama:
+    image: ollama/ollama:latest
+    container_name: conversx-ollama
+    restart: unless-stopped
+    # CPU-only mode — no GPU flags for Gate A gating runs
+    # To enable GPU (non-gating extra): add --gpus all and ensure NVIDIA runtime
+    environment:
+      OLLAMA_MAX_LOADED_MODELS: "1"
+      OLLAMA_NUM_PARALLEL: "1"
+    volumes:
+      - ollama_models:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:11434/api/tags || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.20"      # given more headroom since LLM and STT never run together
+          memory: 2560M     # 1.9 GB model + KV cache + Ollama overhead
+        reservations:
+          memory: 512M
+
+  # ---------------------------------------------------------------------------
+  # Prometheus — metrics scraping (internal only)
+  # Short retention (3 days) to keep RAM/disk low.
+  # ---------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    container_name: conversx-prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=3d
+      - --web.listen-address=127.0.0.1:9090
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    deploy:
+      resources:
+        limits:
+          cpus: "0.10"
+          memory: 384M
+        reservations:
+          memory: 128M
+
+  # ---------------------------------------------------------------------------
+  # Uptime Kuma — external health checks and status page
+  # ---------------------------------------------------------------------------
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: conversx-uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3001"
+    volumes:
+      - uptime_kuma_data:/app/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.10"
+          memory: 320M
+        reservations:
+          memory: 64M
+
+# ---------------------------------------------------------------------------
+# Named volumes
+# ---------------------------------------------------------------------------
+volumes:
+  postgres_data:
+  redis_data:
+  audio_tmp:       # ephemeral; swept by cron every 15 min for orphaned files
+  whisper_models:  # faster-whisper model weights
+  ollama_models:   # Ollama model weights
+  prometheus_data:
+  uptime_kuma_data:

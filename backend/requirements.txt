@@ -1,0 +1,55 @@
+# =============================================================================
+# ConversX Backend — Production dependencies
+# All versions pinned. Run `pip-audit -r requirements.txt` to check for CVEs.
+# CPU-only torch is installed separately in Dockerfile (see above).
+# =============================================================================
+
+# Web framework
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.20    # file uploads
+
+# Database
+sqlalchemy==2.0.36
+alembic==1.14.0
+psycopg2-binary==2.9.10     # or psycopg2 (compiled) in production image
+
+# Redis / RQ
+redis==5.2.1
+rq==2.0.0
+
+# Auth
+argon2-cffi==23.1.0
+python-jose[cryptography]==3.3.0
+passlib==1.7.4
+
+# Validation
+pydantic==2.10.3
+pydantic-settings==2.7.0
+email-validator==2.2.0
+
+# HTTP client (Brevo, Turnstile, Cloudflare Access JWT)
+httpx==0.28.1
+
+# Structured logging
+python-json-logger==3.2.1
+
+# Prometheus metrics
+prometheus-client==0.21.1
+
+# NLP — scoring engine (Week 4+)
+spacy==3.8.3
+
+# STT — faster-whisper (Week 5+)
+faster-whisper==1.1.1
+
+# Toxicity model — Detoxify (Week 6+)
+detoxify==0.5.2
+
+# Common password list check (Week 2+)
+# Using a lightweight wordlist; hibp-downloader or a static list
+zxcvbn==4.4.28
+
+# Utilities
+python-dotenv==1.0.1
+tenacity==9.0.0             # retries

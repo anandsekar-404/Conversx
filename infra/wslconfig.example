@@ -1,0 +1,34 @@
+# WSL2 Memory Configuration for ConversX Local-First Development
+#
+# INSTRUCTIONS:
+#   Place this file at: C:\Users\anand\.wslconfig
+#   Then in PowerShell: wsl --shutdown
+#   Then restart Docker Desktop.
+#
+# These limits constrain ALL WSL2 VMs (including Docker Desktop's VM).
+# They mimic the Oracle Always Free A1 target: ~2 OCPU, 12 GB RAM.
+# We cap at 9 GB here to leave headroom for the Windows host and to
+# match the §18.2 local-gate limit (stack must fit in 9 GB).
+#
+# After applying, verify with:
+#   wsl -- free -h          (inside WSL2 shell)
+#   docker info | grep -i memory   (from a terminal)
+#
+[wsl2]
+# 2 virtual CPUs — matches the 2 OCPU Oracle A1 target
+processors=2
+
+# 9 GB total WSL2 memory — Gate A limit per §18.2
+# This covers all Docker containers + the WSL2 kernel overhead (~200 MB)
+memory=9GB
+
+# 4 GB swap — required by §6 ("Add a 4 GB swap file")
+swap=4GB
+
+# Prevent WSL2 from consuming host memory aggressively
+# (Keeps Windows UI responsive while benchmarks run)
+pageReporting=true
+
+# Optional: keep WSL2 VM alive between Docker commands (faster startup)
+# Set to false if you want strict memory accounting between runs
+localhostForwarding=true

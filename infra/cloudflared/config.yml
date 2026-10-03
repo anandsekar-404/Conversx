@@ -1,0 +1,8 @@
+# UNTESTED — has not run on a real server. Mark as tested in RUNBOOK.md after Gate B.
+tunnel: <TUNNEL_ID>
+credentials-file: /etc/cloudflared/<TUNNEL_ID>.json
+
+ingress:
+  - hostname: ${API_HOSTNAME:-api.conversx.example}
+    service: http://localhost:8000
+  - service: http_status:404

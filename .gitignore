@@ -1,0 +1,77 @@
+# =============================================================================
+# ConversX — .gitignore
+# =============================================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Alembic
+# (keep alembic/ tracked; ignore only generated migration cache if any)
+
+# Node / frontend
+node_modules/
+dist/
+.next/
+out/
+
+# Environment & secrets — NEVER commit these
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+
+# Docker
+*.tar
+
+# Model weights — never bake into repo
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.onnx
+/models/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temp / scratch
+tmp/
+temp/
+scratch/
+
+# Cloudflared credentials (never commit)
+infra/cloudflared/*.json
+
+# OS
+desktop.ini

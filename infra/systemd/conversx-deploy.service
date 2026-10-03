@@ -1,0 +1,15 @@
+[Unit]
+Description=ConversX pull-based deploy service
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=conversx
+WorkingDirectory=/opt/conversx
+ExecStart=/opt/conversx/infra/scripts/deploy.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

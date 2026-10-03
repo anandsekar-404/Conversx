@@ -1,0 +1,31 @@
+# Enforce LF line endings for all shell scripts and Linux-targeted files
+# so they don't get CRLF on Windows checkouts and break bash execution.
+* text=auto
+
+# Shell scripts must always be LF
+*.sh text eol=lf
+
+# Python files
+*.py text eol=lf
+
+# Config files
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+*.mako text eol=lf
+
+# Docker
+Dockerfile text eol=lf
+
+# Docs (allow OS-native line endings)
+*.md text
+
+# Binaries
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
