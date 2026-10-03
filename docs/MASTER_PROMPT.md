@@ -441,3 +441,17 @@ curl -fsS "$HEALTHCHECK_PING_URL" >/dev/null
 4. Test suites: unit, API, security (CSRF, IDOR, rate limit, cookie flags, token reuse), moderation false-positive and role-play sets, injection set, scoring golden set, audio-deletion test, Redis-restart test, restore drill.
 
 Begin with Week 1. Report benchmark results, verified free-tier facts and any conflicts before starting Week 2.
+
+## 18. Addendum: hosting status and local-first mode (overrides conflicting text above)
+
+**Status:** the owner has no server yet (Oracle account blocked on payment verification). Do not assume Oracle, and do not attempt any provider signup or deployment.
+
+1. **Hosting-agnostic infra.** Everything must run on any Linux host with Docker, on amd64 or arm64. Build **multi-arch images (linux/amd64 and linux/arm64)** in CI. Keep Oracle-specific notes in `DECISIONS.md` and `FREE_TIER.md`, not in code.
+2. **Local-first Week 1.** Run the full stack with Docker Compose on the owner's machine. To mimic the target, set container limits of about **2 CPUs and 9 GB RAM total** for the whole stack. Record all numbers in `BENCHMARKS.md` as **provisional (laptop)**, and note the laptop's CPU and RAM.
+3. **Two gates.**
+   - **Gate A (now):** the stack runs within the limits above, benchmarks recorded, and model sizes chosen provisionally. Weeks 2 to 10 may proceed on this basis.
+   - **Gate B (before any public launch):** re-run the benchmarks on the real target server, confirm the RAM budget and performance targets, and run a restore drill on that server. If Gate B fails, step models down before launch.
+4. **Deferred, but written.** Cloudflare Tunnel setup, the deploy timer, R2 backups and the restore drill must still be written and unit-tested where possible. Mark every script that has not run on a real server as **UNTESTED** in `RUNBOOK.md`, and test it at Gate B.
+5. **Host candidates (owner decides; record in `DECISIONS.md`):** Oracle Always Free once payment verification works; student-credit cloud; a home machine behind Cloudflare Tunnel for demo or beta use only. Note the trade-offs: a home server has no uptime guarantee, and real user data should not live there without encrypted off-site backups.
+6. **No public launch** with real users until Gate B passes and the legal and privacy checks in Section 11 are done.
+7. Never ask the owner to paste card details, passwords or tokens into chat.
