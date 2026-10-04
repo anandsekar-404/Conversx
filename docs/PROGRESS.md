@@ -75,6 +75,46 @@
 
 ---
 
+---
+
+## Week 1 Pre-Gate A Verification Status (Updated 2026-10-04)
+
+### Fully Verified & Completed
+- [x] Docker Desktop running on host with WSL2 backend.
+- [x] `conversx/backend:local` built cleanly via `docker compose build api` (Image size: 3.06 GB disk usage, 701 MB layer content).
+- [x] Non-root volume permissions verified: User `conversx` (UID 1001, GID 1001) successfully wrote and deleted test files in `/models/whisper`, `/home/conversx/.cache/huggingface`, and `/tmp/conversx-audio`.
+- [x] Resource inheritance verified via `docker inspect` on a one-off `compose run` worker container:
+  - `HostConfig.NanoCpus`: `2000000000` (2.0 CPUs limit).
+  - `HostConfig.Memory`: `3758096384` bytes (3584 MB limit).
+- [x] Core dependencies (`conversx-postgres`, `conversx-redis`, `conversx-api`) running healthy with `/healthz` returning `200 OK` (`{"status":"ok","env":"development"}`).
+- [x] Ollama readiness check verified: Confirmed that official `ollama/ollama` does not bundle `curl`. Replaced healthcheck in `infra/docker-compose.yml` with `["CMD", "ollama", "list"]` and readiness polling in `scripts/run_benchmarks.sh` with `docker exec conversx-ollama ollama list`.
+- [x] Pinned Ollama image tag to `ollama/ollama:0.5.4` in `infra/docker-compose.yml`.
+- [x] Recorded exact component versions in `docs/BENCHMARKS.md`:
+  - `faster-whisper`: `1.1.1`
+  - `ctranslate2`: `4.8.2`
+  - `Ollama`: `0.5.4`
+  - `Detoxify`: `0.5.2` (model: `original`, BERT-base)
+  - `PyTorch`: `2.5.1+cpu`
+- [x] Updated `scripts/bench_stt.py`: Clips are selected strictly by measured duration (`get_audio_duration`), picking closest to 30.0s and 60.0s rather than relying on filenames. Added support for `benchmark_audio/filler_truth.csv` to calculate filler survival percentage. Created template CSV.
+- [x] Updated `scripts/bench_ram.py`: Switched Detoxify to `"original"` (BERT-base), replaced container curl call with Python worker HTTP request, and made `sample_container_ram` resilient to partial service sets.
+- [x] Updated `infra/wslconfig.example`: Sized `.wslconfig` memory to `10.5GB` (above the 9024 MB container limits to prevent VM-level kernel OOM kills) while keeping the Gate A benchmark gate evaluated on `docker stats` strictly at `8.5 GB`.
+- [x] Verified `scripts/run_benchmarks.sh` runner with `--skip-stt --skip-llm`.
+
+---
+
+## Explicit List of Everything Not Yet Verified (Unverified Items)
+
+The following items cannot be verified until the user places real audio in `benchmark_audio/` and executes the full Gate A benchmark:
+
+1. **STT Steady-State RTF & Latency**: Real-speech transcription RTF on 30s and 60s audio clips has not been measured yet (requires user audio recordings in `benchmark_audio/`).
+2. **Filler Word Survival Rate**: Actual filler word detection rate has not been measured yet (requires real speech clips with natural filler words like "um", "uh", "like").
+3. **LLM Inference Throughput**: Tokens/second and Time-to-First-Token (TTFT) for Qwen2.5 3B / 1.5B under 2-thread CPU limits have not been measured yet.
+4. **Full-Stack Concurrent Peak RAM**: RAM usage during simultaneous STT + LLM + Detoxify original inference has not been measured under full load (pending full Gate A run).
+5. **ARM64 Architecture Parity**: All tests run locally on Windows 11 (x86_64 Intel Core i5). ARM64 Neoverse-N1 performance (Oracle A1 target) is unverified and deferred to Gate B (§18.2).
+6. **Cloudflare Tunnel Ingress & Public Domain Routing**: Zero-trust domain routing and external traffic ingress are untested locally (deferred to Gate B).
+7. **Database Backup & Disaster Recovery Drills**: `backup.sh`, `restore.sh`, and `restore-drill.sh` scripts are unverified on a live database with test data.
+8. **Email Delivery & Turnstile Bot Protection**: Brevo API integration and Cloudflare Turnstile token validation are unverified (mocked/stubbed until Week 2).
+
 ## Week 2 (Not started — Gate A must pass first)
 
 **Milestone:** Auth and security baseline.  

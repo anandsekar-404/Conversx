@@ -25,6 +25,27 @@
 
 ---
 
+---
+
+## Pinned Component Versions (Gate A Week 1)
+
+All model inference and runtime dependencies are explicitly pinned to ensure reproducible Gate A benchmark results:
+
+| Component | Pinned Version / Exact Tag | Image Digest / Spec | Specification File | Role in Stack |
+|---|---|---|---|---|
+| **faster-whisper** | `1.2.1` | pip package | `backend/requirements.txt` | CTranslate2-backed STT engine (int8 CPU execution) |
+| **ctranslate2** | `4.8.2` | pip package | Transitive dep of `faster-whisper==1.2.1` | Fast inference engine for Whisper on CPU |
+| **Ollama** | `0.35.1` (`ollama/ollama:0.35.1`) | `sha256:292ee7945dfc3d5840a181f3ab86fedb1e66703e02c8af98b50f4da56b7e278c` | `infra/docker-compose.yml` | Local CPU LLM runner (pinned image tag) |
+| **Detoxify** | `0.5.2` (model: `original`) | pip package | `backend/requirements.txt` | Toxicity moderation (BERT-base, PyTorch) |
+| **PyTorch** | `2.5.1+cpu` | pip package | `backend/Dockerfile` | CPU-only wheel via pytorch.org/whl/cpu (~2 GB saved) |
+| **Python** | `3.11-slim` | `python:3.11-slim` | `backend/Dockerfile` | Base runtime environment |
+| **PostgreSQL** | `16.15-alpine` (`postgres:16.15-alpine`) | `sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea` | `infra/docker-compose.yml` | Internal transactional database |
+| **Redis** | `7.4.11-alpine` (`redis:7.4.11-alpine`) | `sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499` | `infra/docker-compose.yml` | RQ queue broker with AOF persistence |
+| **Prometheus** | `v3.1.0` (`prom/prometheus:v3.1.0`) | `sha256:6559acbd5d770b15bb3c954629ce190ac3cbbdb2b7f1c30f0385c4e05104e218` | `infra/docker-compose.yml` | Metrics scraping |
+| **Uptime Kuma** | `1.23.17` (`louislam/uptime-kuma:1.23.17`) | `sha256:70233f4acb5163fd2a59a49909cf01e44415cecff13dba69e3a86647a2919f83` | `infra/docker-compose.yml` | Service uptime and external status monitoring |
+
+---
+
 ## Gate A Targets (from §13 Week 1)
 
 | Metric | Gate criterion | Provisional result |

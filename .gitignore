@@ -75,3 +75,6 @@ infra/cloudflared/*.json
 
 # OS
 desktop.ini
+# Benchmark recordings & local run outputs (never commit)
+benchmark_audio/
+benchmark_results/

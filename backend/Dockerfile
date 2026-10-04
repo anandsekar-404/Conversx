@@ -56,8 +56,10 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY --chown=conversx:conversx . .
 
-# Temp audio directory (mapped to named volume in compose)
-RUN mkdir -p /tmp/conversx-audio && chown conversx:conversx /tmp/conversx-audio
+# Pre-create temp audio, model cache, and HuggingFace cache directories with non-root ownership
+# so Docker volume initialization preserves non-root write permissions (Gate A, D-002)
+RUN mkdir -p /tmp/conversx-audio /models/whisper /home/conversx/.cache/huggingface && \
+    chown -R conversx:conversx /tmp/conversx-audio /models /home/conversx
 
 USER conversx
 
