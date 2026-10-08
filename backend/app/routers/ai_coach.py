@@ -1,5 +1,7 @@
 """
 ConversX AI Coach API Router.
+Phase 7 & Security Hardening Pass.
+
 Endpoints:
 - GET  /api/v1/ai-coach/status                 - List connection statuses & masked identifiers
 - POST /api/v1/ai-coach/connect                - Save encrypted provider key
@@ -16,10 +18,11 @@ from typing import Any, Dict, Optional
 logger = logging.getLogger("conversx.routers.ai_coach")
 
 try:
-    from fastapi import APIRouter, Depends, HTTPException, Query, status
+    from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
     from pydantic import BaseModel, Field
 
     from app.core.auth import UserSession, get_optional_current_user
+    from app.core.rate_limit import check_rate_limit
     from app.services.ai_coach import (
         delete_user_ai_connection,
         generate_ai_coaching,
@@ -49,12 +52,33 @@ try:
         speaking_metrics: Optional[Dict[str, Any]] = Field(None, description="Acoustic metrics (wpm, fillers, pauses)")
         provider: Optional[str] = Field(None, description="Explicit provider override")
 
+    def _ensure_onboarding(user: Optional[UserSession]) -> None:
+        """Enforces onboarding completion for authenticated users accessing AI coaching."""
+        if user and not user.onboarding_completed:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="ConversX User ID onboarding required. Please complete onboarding first.",
+                headers={"X-Onboarding-Required": "true"}
+            )
+
+    def _get_client_ip(request: Request) -> str:
+        forwarded = request.headers.get("X-Forwarded-For")
+        if forwarded:
+            return forwarded.split(",")[0].strip()
+        real_ip = request.headers.get("X-Real-IP")
+        if real_ip:
+            return real_ip.strip()
+        if request.client:
+            return request.client.host
+        return "127.0.0.1"
+
 
     @router.get("/status")
     async def get_connection_status(
         user: Optional[UserSession] = Depends(get_optional_current_user),
     ) -> Dict[str, Any]:
         """Return safe provider status metadata. Never returns full API keys."""
+        _ensure_onboarding(user)
         user_id = user.user_id if user else "guest_user"
         return get_user_ai_connections(user_id=user_id)
 
@@ -65,6 +89,7 @@ try:
         user: Optional[UserSession] = Depends(get_optional_current_user),
     ) -> Dict[str, Any]:
         """Save and encrypt API credentials at rest for the current user."""
+        _ensure_onboarding(user)
         user_id = user.user_id if user else "guest_user"
         try:
             res = save_user_ai_connection(
@@ -83,9 +108,20 @@ try:
     @router.post("/test")
     async def test_provider(
         req: TestRequest,
+        request: Request,
         user: Optional[UserSession] = Depends(get_optional_current_user),
     ) -> Dict[str, Any]:
-        """Test API connection. Returns sanitized states: connected, invalid, rate_limited, unavailable."""
+        """Test API connection. Rate limited to prevent key probing abuse."""
+        _ensure_onboarding(user)
+        client_ip = _get_client_ip(request)
+        allowed, retry_after = check_rate_limit(client_ip, "ai_test")
+        if not allowed:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Too many connection test requests. Please wait.",
+                headers={"Retry-After": str(retry_after)}
+            )
+
         user_id = user.user_id if user else "guest_user"
         return verify_ai_connection(
             user_id=user_id,
@@ -100,6 +136,7 @@ try:
         user: Optional[UserSession] = Depends(get_optional_current_user),
     ) -> Dict[str, Any]:
         """Permanently delete stored provider credentials."""
+        _ensure_onboarding(user)
         user_id = user.user_id if user else "guest_user"
         deleted = delete_user_ai_connection(user_id=user_id, provider=provider)
         return {
@@ -116,6 +153,7 @@ try:
         user: Optional[UserSession] = Depends(get_optional_current_user),
     ) -> Dict[str, Any]:
         """Set user's preferred AI coach provider."""
+        _ensure_onboarding(user)
         user_id = user.user_id if user else "guest_user"
         pref = set_user_preferred_provider(user_id=user_id, provider=req.provider)
         return {"preferred_provider": pref}
@@ -128,19 +166,26 @@ try:
     ) -> Dict[str, Any]:
         """
         Generate personalized AI coaching for spoken response.
-        Core ConversX score is preserved and returned untouched.
+        Enforces strict account isolation and preserves ConversX deterministic scoring.
         """
+        _ensure_onboarding(user)
         user_id = user.user_id if user else "guest_user"
-        coaching_result = generate_ai_coaching(
-            user_id=user_id,
-            transcript=req.transcript,
-            scenario_data=req.scenario,
-            communication_metrics=req.communication_metrics,
-            speaking_metrics=req.speaking_metrics,
-            preferred_provider=req.provider
-        )
-        return coaching_result
+        try:
+            coaching = generate_ai_coaching(
+                user_id=user_id,
+                spoken_transcript=req.transcript,
+                scenario_details=req.scenario,
+                communication_scores=req.communication_metrics,
+                acoustic_metrics=req.speaking_metrics,
+                explicit_provider=req.provider
+            )
+            return coaching
+        except Exception as e:
+            logger.error(f"Error generating AI coaching: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Could not generate AI coaching at this time."
+            )
 
 except ImportError:
-    # Test environment fallback when FastAPI is not present
     router = None

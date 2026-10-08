@@ -27,7 +27,21 @@ export const RESERVED_HANDLES = new Set([
   'staff',
   'null',
   'undefined',
-  'anonymous'
+  'anonymous',
+  'billing',
+  'legal',
+  'terms',
+  'privacy',
+  'status',
+  'health',
+  'metrics',
+  'graphql',
+  'oauth',
+  'webhook',
+  'conversx_admin',
+  'conversx_support',
+  'conversx_official',
+  'owner'
 ]);
 
 export const HANDLE_REGEX = /^[a-zA-Z0-9_]{3,20}$/;
@@ -100,6 +114,11 @@ export class GoogleAuthService {
 
     if (clean.length < 3 || clean.length > 20) {
       return { valid: false, error: 'Use 3–20 letters, numbers, or underscores.', normalized: norm };
+    }
+
+    // Reject non-ASCII characters / Unicode homoglyphs / symbols
+    if (!/^[\x00-\x7F]+$/.test(clean)) {
+      return { valid: false, error: 'Use 3–20 letters, numbers, or underscores (no spaces or special symbols).', normalized: norm };
     }
 
     if (!HANDLE_REGEX.test(clean)) {

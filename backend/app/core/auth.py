@@ -1,11 +1,14 @@
 """
 ConversX Authentication & Role-Based Access Control (RBAC) Module.
-Phase 7 Production Hardening.
+Phase 7 & Security Hardening Pass.
 
 Features:
-- RFC 7519 Compliant HS256 JWT generation, decoding, and validation.
+- RFC 7519 Compliant HS256 JWT generation, decoding, algorithm validation, and signature verification.
+- Explicit header 'alg' enforcement (rejects 'none', 'RS256', and algorithm confusion).
+- Rejection of expired, future-dated, or malformed JWT tokens.
 - NIST PBKDF2-HMAC-SHA256 password hashing.
 - Role-Based Access Control: USER and ADMIN roles.
+- Mandatory ConversX User ID onboarding enforcement (`require_onboarded_user`).
 - Ownership verification to prevent IDOR (Insecure Direct Object Reference).
 - Dual-mode support: Uses FastAPI and PyJWT when installed; provides pure-Python
   standard library fallbacks for test environments without external dependencies.
@@ -131,8 +134,14 @@ def create_access_token(
 
 def decode_access_token(token: str, secret_key: Optional[str] = None) -> Dict[str, Any]:
     """
-    Validate and decode an HS256 JWT token.
-    Raises ValueError on invalid token, signature mismatch, or expired token.
+    Validate and decode an HS256 JWT token with strict adversarial security checks:
+    - Segment count validation
+    - Header parsing & explicit 'HS256' algorithm enforcement (rejects 'none', 'RS256', etc.)
+    - Typ enforcement
+    - Signature verification using HMAC-SHA256
+    - Clock skew / iat validation
+    - Expiration validation
+    - Required 'sub' claim validation
     """
     if not token or not isinstance(token, str):
         raise ValueError("Invalid token: token must be a non-empty string.")
@@ -144,23 +153,65 @@ def decode_access_token(token: str, secret_key: Optional[str] = None) -> Dict[st
     header_b64, payload_b64, sig_b64 = parts
     secret = (secret_key or JWT_SECRET_KEY).encode("utf-8")
 
-    # Verify signature
+    # 1. Parse and validate header
+    try:
+        header_bytes = _b64url_decode(header_b64)
+        header = json.loads(header_bytes.decode("utf-8"))
+    except Exception as e:
+        raise ValueError(f"Invalid token: header decoding failed ({e}).")
+
+    if not isinstance(header, dict):
+        raise ValueError("Invalid token: header must be a JSON object.")
+
+    # Strict algorithm enforcement: only HS256 permitted
+    alg = header.get("alg")
+    if not alg:
+        raise ValueError("Invalid token: missing 'alg' in header.")
+    if alg != "HS256":
+        raise ValueError(f"Invalid token: algorithm '{alg}' is not permitted. Only 'HS256' is accepted.")
+
+    # Validate typ if present
+    typ = header.get("typ")
+    if typ is not None and typ.upper() != "JWT":
+        raise ValueError(f"Invalid token: unsupported token type '{typ}'.")
+
+    # 2. Verify signature
     signing_input = f"{header_b64}.{payload_b64}".encode("ascii")
     expected_sig = hmac.new(secret, signing_input, hashlib.sha256).digest()
-    actual_sig = _b64url_decode(sig_b64)
+    try:
+        actual_sig = _b64url_decode(sig_b64)
+    except Exception as e:
+        raise ValueError(f"Invalid token: signature decoding failed ({e}).")
 
     if not hmac.compare_digest(expected_sig, actual_sig):
         raise ValueError("Invalid token: signature verification failed.")
 
-    # Parse payload
+    # 3. Parse payload
     try:
         payload_bytes = _b64url_decode(payload_b64)
         payload = json.loads(payload_bytes.decode("utf-8"))
     except Exception as e:
         raise ValueError(f"Invalid token: payload decoding failed ({e}).")
 
-    # Check expiration
+    if not isinstance(payload, dict):
+        raise ValueError("Invalid token: payload must be a JSON object.")
+
+    # Required claims validation
+    sub = payload.get("sub")
+    if not sub or not isinstance(sub, str):
+        raise ValueError("Invalid token: missing or invalid subject ('sub') claim.")
+
+    # Check timestamps: iat and exp
     now = int(time.time())
+
+    iat = payload.get("iat")
+    if iat is not None:
+        if not isinstance(iat, (int, float)):
+            raise ValueError("Invalid token: invalid 'iat' claim.")
+        # Allow 60 seconds clock skew tolerance for future iat
+        if iat > now + 60:
+            raise ValueError("Invalid token: token issued in the future.")
+
     exp = payload.get("exp")
     if exp is None or not isinstance(exp, (int, float)):
         raise ValueError("Invalid token: missing or invalid expiration claim.")
@@ -168,12 +219,16 @@ def decode_access_token(token: str, secret_key: Optional[str] = None) -> Dict[st
     if now > exp:
         raise ValueError("Token has expired.")
 
+    if iat is not None and exp <= iat:
+        raise ValueError("Invalid token: expiration must be after issuance.")
+
+    # Validate issuer if present
+    iss = payload.get("iss")
+    if iss is not None and iss != JWT_ISSUER:
+        raise ValueError(f"Invalid token: unrecognized issuer '{iss}'.")
+
     return payload
 
-
-# ---------------------------------------------------------------------------
-# User Session & Ownership Checks
-# ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # Reserved ConversX User IDs & Validation
@@ -198,9 +253,23 @@ RESERVED_USER_IDS = {
     "null",
     "undefined",
     "anonymous",
+    "billing",
+    "legal",
+    "terms",
+    "privacy",
+    "status",
+    "health",
+    "metrics",
+    "graphql",
+    "oauth",
+    "webhook",
+    "conversx_admin",
+    "conversx_support",
+    "conversx_official",
+    "owner",
 }
 
-USER_ID_REGEX = re.compile(r"^[a-zA-Z0-9_]{3,20}$")
+USER_ID_REGEX = re.compile(r"^[a-zA-Z0-9_]{3,20}$", re.ASCII)
 
 
 def normalize_conversx_user_id(handle: str) -> str:
@@ -218,7 +287,7 @@ def validate_conversx_user_id(handle: str) -> tuple[bool, Optional[str]]:
     Validates a proposed ConversX User ID.
     Rules:
     - 3 to 20 characters
-    - Letters, numbers, underscores only
+    - Letters, numbers, underscores only (strict ASCII)
     - No spaces or special symbols
     - Not in reserved names
     Returns (is_valid, error_message).
@@ -230,11 +299,17 @@ def validate_conversx_user_id(handle: str) -> tuple[bool, Optional[str]]:
     if clean.startswith("@"):
         clean = clean[1:]
 
+    # Unicode check: strictly reject non-ASCII homoglyphs / symbols
+    try:
+        clean.encode("ascii")
+    except UnicodeEncodeError:
+        return False, "Use 3-20 letters, numbers, or underscores (no spaces or special symbols)."
+
     if len(clean) < 3 or len(clean) > 20:
-        return False, "Use 3–20 letters, numbers, or underscores."
+        return False, "Use 3-20 letters, numbers, or underscores."
 
     if not USER_ID_REGEX.match(clean):
-        return False, "Use 3–20 letters, numbers, or underscores (no spaces or special symbols)."
+        return False, "Use 3-20 letters, numbers, or underscores (no spaces or special symbols)."
 
     normalized = clean.lower()
     if normalized in RESERVED_USER_IDS:
@@ -397,6 +472,21 @@ try:
             avatar_url=avatar_url,
         )
 
+    async def require_onboarded_user(
+        current_user: UserSession = Depends(get_current_user),
+    ) -> UserSession:
+        """
+        FastAPI dependency: strictly verifies that the authenticated user has completed
+        ConversX User ID onboarding. Rejects onboarding-incomplete sessions with 403.
+        """
+        if not current_user.onboarding_completed or not current_user.conversx_user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="ConversX User ID onboarding required. Please complete onboarding first.",
+                headers={"X-Onboarding-Required": "true"},
+            )
+        return current_user
+
     def require_role(allowed_roles: List[str]):
         """Dependency factory to enforce role-based access control."""
         allowed_set = {r.upper() for r in allowed_roles}
@@ -438,6 +528,7 @@ try:
 except ImportError:
     # FastAPI not installed in host environment; dependencies defined as None
     get_current_user = None
+    require_onboarded_user = None
     require_role = None
     require_admin = None
     require_user = None

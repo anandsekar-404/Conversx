@@ -1,79 +1,65 @@
 """
-FastAPI Router for Live Group Discussion.
-Provides REST management for rooms, topics, participant lifecycle,
-and WebSocket-based WebRTC signaling coordinator.
-"""
+ConversX Live Group Discussion Router.
+Phase 7 & Security Hardening Pass.
 
+Coordinates real-time peer discussion rooms (3 to 8 participants),
+WebRTC signaling relay, topic retrieval, contribution analysis, and privacy filtering.
+"""
 from __future__ import annotations
 
 import json
 from typing import Any, Dict, List, Optional
 
 try:
-    from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, status
+    from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, status
     from pydantic import BaseModel, Field
-except ImportError:
-    APIRouter = None
-    HTTPException = None
-    WebSocket = None
-    WebSocketDisconnect = None
-    BaseModel = None
-    Field = None
 
-from app.services.discussion import (
-    MIN_PARTICIPANTS,
-    MAX_PARTICIPANTS,
-    get_all_topics,
-    get_topic_by_id,
-    create_discussion_room,
-    get_discussion_room,
-    join_discussion_room,
-    leave_discussion_room,
-    start_discussion_room,
-    complete_discussion_room,
-    analyze_group_discussion_contribution,
-    RoomNotFoundError,
-    RoomFullError,
-    InsufficientParticipantsError,
-    InvalidRoomStateError,
-)
+    from app.core.auth import UserSession, get_optional_current_user
+    from app.services.discussion import (
+        analyze_group_discussion_contribution,
+        complete_discussion_room,
+        create_discussion_room,
+        get_all_topics,
+        get_discussion_room,
+        get_topic_by_id,
+        join_discussion_room,
+        leave_discussion_room,
+        sanitize_participant_for_client,
+        sanitize_room_for_client,
+        start_discussion_room,
+        InsufficientParticipantsError,
+        InvalidRoomStateError,
+        RoomFullError,
+        RoomNotFoundError,
+    )
 
-if APIRouter is not None:
     router = APIRouter(prefix="/api/v1/discussion", tags=["discussion"])
-else:
-    router = None
 
-
-# ---------------------------------------------------------------------------
-# Pydantic Request Models
-# ---------------------------------------------------------------------------
-if BaseModel is not None:
+    # -----------------------------------------------------------------------
+    # Request & Response Schemas
+    # -----------------------------------------------------------------------
     class CreateRoomRequest(BaseModel):
-        topic_id: str = "disc_01"
-        username: str = "Host"
-        user_id: Optional[str] = None
-        custom_title: Optional[str] = None
+        topic_id: str = Field(..., description="Topic identifier (e.g. 'disc_01')")
+        username: Optional[str] = Field("Host", description="Host display username (overridden by auth session if present)")
+        user_id: Optional[str] = Field(None, description="Host user ID")
+        custom_title: Optional[str] = Field(None, description="Optional custom room title")
 
     class JoinRoomRequest(BaseModel):
-        username: str
-        user_id: Optional[str] = None
+        username: Optional[str] = Field("Participant", description="Joining participant username (overridden by auth session if present)")
+        user_id: Optional[str] = Field(None, description="Optional user ID")
 
     class LeaveRoomRequest(BaseModel):
-        participant_id_or_username: str
+        participant_id_or_username: str = Field(..., description="Participant ID or username to remove")
 
     class AnalyzeContributionRequest(BaseModel):
-        user_transcript: str
-        speaking_time_seconds: float = 60.0
-        total_discussion_duration_seconds: float = 900.0
-        participant_count: int = 5
-        speaking_turns: int = 2
-        topic_id: str = "disc_01"
+        user_transcript: str = Field(..., min_length=1, description="Transcribed spoken contribution")
+        speaking_time_seconds: float = Field(..., ge=0.0, description="Total speaking time in seconds")
+        total_discussion_duration_seconds: float = Field(..., gt=0.0, description="Full session duration in seconds")
+        participant_count: int = Field(..., ge=1, le=8, description="Number of participants in room")
+        speaking_turns: int = Field(1, ge=0, description="Number of times user took the floor")
+        topic_id: Optional[str] = Field(None, description="Discussion topic identifier")
 
 
-# ---------------------------------------------------------------------------
-# REST Endpoints
-# ---------------------------------------------------------------------------
-if router is not None:
     @router.get("/topics")
     async def list_topics() -> Dict[str, Any]:
         """List all available curated discussion topics."""
@@ -91,41 +77,78 @@ if router is not None:
         return {"status": "success", "topic": topic}
 
     @router.post("/rooms")
-    async def create_room_endpoint(req: CreateRoomRequest) -> Dict[str, Any]:
-        """Create a new discussion room in waiting state."""
+    async def create_room_endpoint(
+        req: CreateRoomRequest,
+        current_user: Optional[UserSession] = Depends(get_optional_current_user),
+    ) -> Dict[str, Any]:
+        """
+        Create a new discussion room in waiting state.
+        If authenticated, requires completed ConversX onboarding and enforces @handle identity.
+        """
+        host_username = req.username or "Host"
+        host_user_id = req.user_id
+
+        if current_user:
+            if not current_user.onboarding_completed or not current_user.conversx_user_id:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="ConversX User ID onboarding required. Please complete onboarding first.",
+                    headers={"X-Onboarding-Required": "true"}
+                )
+            host_username = f"@{current_user.conversx_user_id}"
+            host_user_id = current_user.user_id
+
         room = create_discussion_room(
             topic_id=req.topic_id,
-            created_by_username=req.username,
-            created_by_user_id=req.user_id,
+            created_by_username=host_username,
+            created_by_user_id=host_user_id,
             custom_title=req.custom_title
         )
-        return {"status": "success", "room": room}
+        return {"status": "success", "room": sanitize_room_for_client(room)}
 
     @router.get("/rooms/{room_id}")
     async def get_room_endpoint(room_id: str) -> Dict[str, Any]:
-        """Get live status and participant list for a room."""
+        """Get live status and participant list for a room. Strips private user IDs."""
         try:
             room = get_discussion_room(room_id)
-            return {"status": "success", "room": room}
+            return {"status": "success", "room": sanitize_room_for_client(room)}
         except RoomNotFoundError as e:
             raise HTTPException(status_code=404, detail=str(e))
 
     @router.post("/rooms/{room_id}/join")
-    async def join_room_endpoint(room_id: str, req: JoinRoomRequest) -> Dict[str, Any]:
+    async def join_room_endpoint(
+        room_id: str,
+        req: JoinRoomRequest,
+        current_user: Optional[UserSession] = Depends(get_optional_current_user),
+    ) -> Dict[str, Any]:
         """
         Join a discussion room.
         Enforces 3-8 participants bounds. Rejects 9th participant with 409 Conflict.
+        If authenticated, requires completed onboarding and forces @handle identity (anti-impersonation).
         """
+        join_username = req.username or "Participant"
+        join_user_id = req.user_id
+
+        if current_user:
+            if not current_user.onboarding_completed or not current_user.conversx_user_id:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="ConversX User ID onboarding required. Please complete onboarding first.",
+                    headers={"X-Onboarding-Required": "true"}
+                )
+            join_username = f"@{current_user.conversx_user_id}"
+            join_user_id = current_user.user_id
+
         try:
             room, participant = join_discussion_room(
                 room_id=room_id,
-                username=req.username,
-                user_id=req.user_id
+                username=join_username,
+                user_id=join_user_id
             )
             return {
                 "status": "success",
-                "room": room,
-                "participant": participant
+                "room": sanitize_room_for_client(room),
+                "participant": sanitize_participant_for_client(participant)
             }
         except RoomNotFoundError as e:
             raise HTTPException(status_code=404, detail=str(e))
@@ -142,7 +165,7 @@ if router is not None:
                 room_id=room_id,
                 participant_id_or_username=req.participant_id_or_username
             )
-            return {"status": "success", "room": room}
+            return {"status": "success", "room": sanitize_room_for_client(room)}
         except RoomNotFoundError as e:
             raise HTTPException(status_code=404, detail=str(e))
 
@@ -154,7 +177,7 @@ if router is not None:
         """
         try:
             room = start_discussion_room(room_id)
-            return {"status": "success", "room": room}
+            return {"status": "success", "room": sanitize_room_for_client(room)}
         except RoomNotFoundError as e:
             raise HTTPException(status_code=404, detail=str(e))
         except InsufficientParticipantsError as e:
@@ -165,16 +188,26 @@ if router is not None:
         """Conclude the discussion session."""
         try:
             room = complete_discussion_room(room_id)
-            return {"status": "success", "room": room}
+            return {"status": "success", "room": sanitize_room_for_client(room)}
         except RoomNotFoundError as e:
             raise HTTPException(status_code=404, detail=str(e))
 
     @router.post("/analyze")
-    async def analyze_contribution_endpoint(req: AnalyzeContributionRequest) -> Dict[str, Any]:
+    async def analyze_contribution_endpoint(
+        req: AnalyzeContributionRequest,
+        current_user: Optional[UserSession] = Depends(get_optional_current_user),
+    ) -> Dict[str, Any]:
         """
         Evaluate individual participant contribution across the 8 ConversX dimensions
         and discussion-specific collaboration metrics.
         """
+        if current_user and not current_user.onboarding_completed:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="ConversX User ID onboarding required. Please complete onboarding first.",
+                headers={"X-Onboarding-Required": "true"}
+            )
+
         analysis = analyze_group_discussion_contribution(
             user_transcript=req.user_transcript,
             speaking_time_seconds=req.speaking_time_seconds,
@@ -193,7 +226,6 @@ class DiscussionSignalingHub:
     """Coordinates WebRTC peer connections and real-time room events."""
 
     def __init__(self) -> None:
-        # room_id -> { participant_id: WebSocket }
         self.rooms: Dict[str, Dict[str, Any]] = {}
 
     async def connect(self, room_id: str, participant_id: str, websocket: Any) -> None:
@@ -268,3 +300,7 @@ if router is not None and WebSocket is not None:
                 "type": "peer_disconnected",
                 "participant_id": participant_id
             })
+
+except ImportError:
+    router = None
+    signaling_hub = None

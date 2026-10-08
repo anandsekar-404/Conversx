@@ -178,7 +178,7 @@ def create_discussion_room(
         "status": "waiting",  # waiting, ready, in_progress, completed, cancelled
         "min_participants": MIN_PARTICIPANTS,
         "max_participants": MAX_PARTICIPANTS,
-        "created_at": datetime.datetime.utcnow().isoformat(),
+        "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "started_at": None,
         "ended_at": None,
         "created_by": created_by_username,
@@ -189,7 +189,7 @@ def create_discussion_room(
                 "username": created_by_username,
                 "is_ready": True,
                 "is_muted": False,
-                "joined_at": datetime.datetime.utcnow().isoformat(),
+                "joined_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "speaking_time_seconds": 0.0,
                 "speaking_turns": 0
             }
@@ -237,7 +237,7 @@ def join_discussion_room(
         "username": username,
         "is_ready": False,
         "is_muted": False,
-        "joined_at": datetime.datetime.utcnow().isoformat(),
+        "joined_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "speaking_time_seconds": 0.0,
         "speaking_turns": 0
     }
@@ -284,7 +284,7 @@ def start_discussion_room(room_id: str) -> Dict[str, Any]:
         )
 
     room["status"] = "in_progress"
-    room["started_at"] = datetime.datetime.utcnow().isoformat()
+    room["started_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     return room
 
 
@@ -292,8 +292,47 @@ def complete_discussion_room(room_id: str) -> Dict[str, Any]:
     """Concludes the live group discussion and transitions to completed."""
     room = get_discussion_room(room_id)
     room["status"] = "completed"
-    room["ended_at"] = datetime.datetime.utcnow().isoformat()
+    room["ended_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     return room
+
+
+# ---------------------------------------------------------------------------
+def sanitize_room_for_client(room: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Strips internal user IDs and database keys from participant lists before sending to clients.
+    Public participant objects expose ONLY:
+    - id (ephemeral participant identifier)
+    - username (@handle public identity)
+    - is_ready, is_muted, speaking_time_seconds, speaking_turns, joined_at
+    """
+    clean_room = dict(room)
+    clean_participants = []
+    for p in room.get("participants", []):
+        clean_p = {
+            "id": p.get("id"),
+            "username": p.get("username"),
+            "is_ready": p.get("is_ready", False),
+            "is_muted": p.get("is_muted", False),
+            "joined_at": p.get("joined_at"),
+            "speaking_time_seconds": p.get("speaking_time_seconds", 0.0),
+            "speaking_turns": p.get("speaking_turns", 0),
+        }
+        clean_participants.append(clean_p)
+    clean_room["participants"] = clean_participants
+    return clean_room
+
+
+def sanitize_participant_for_client(participant: Dict[str, Any]) -> Dict[str, Any]:
+    """Strips internal user_id from participant object for public output."""
+    return {
+        "id": participant.get("id"),
+        "username": participant.get("username"),
+        "is_ready": participant.get("is_ready", False),
+        "is_muted": participant.get("is_muted", False),
+        "joined_at": participant.get("joined_at"),
+        "speaking_time_seconds": participant.get("speaking_time_seconds", 0.0),
+        "speaking_turns": participant.get("speaking_turns", 0),
+    }
 
 
 # ---------------------------------------------------------------------------

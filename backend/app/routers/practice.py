@@ -179,14 +179,28 @@ try:
         payload: RecordSessionRequest,
         current_user: Optional[UserSession] = Depends(get_optional_current_user),
     ) -> Dict[str, Any]:
-        target_user_id = payload.user_id or "guest_user"
-        if current_user and not current_user.is_admin:
-            if payload.user_id and payload.user_id != current_user.user_id:
+        target_user_id = "guest_user"
+        if current_user:
+            if not current_user.onboarding_completed:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Forbidden: Cannot record practice session for another user.",
+                    detail="ConversX User ID onboarding required. Please complete onboarding first.",
+                    headers={"X-Onboarding-Required": "true"}
                 )
-            target_user_id = current_user.user_id
+            if not current_user.is_admin:
+                if payload.user_id and payload.user_id != current_user.user_id:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="Forbidden: Cannot record practice session for another user.",
+                    )
+                target_user_id = current_user.user_id
+            else:
+                target_user_id = payload.user_id or current_user.user_id
+        elif payload.user_id and payload.user_id != "guest_user":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authentication required to record practice session for a specific user ID.",
+            )
 
         record = {
             "id": payload.session_id or str(uuid.uuid4()),
@@ -376,14 +390,25 @@ try:
         user_id: Optional[str] = Query("guest_user"),
         current_user: Optional[UserSession] = Depends(get_optional_current_user),
     ) -> Dict[str, Any]:
-        if current_user and not current_user.is_admin:
-            if user_id != current_user.user_id and user_id != "guest_user":
+        target_user_id = "guest_user"
+        if current_user:
+            if not current_user.is_admin:
+                if user_id and user_id != current_user.user_id:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="Forbidden: Cannot access another user's progress data.",
+                    )
+                target_user_id = current_user.user_id
+            else:
+                target_user_id = user_id or current_user.user_id
+        else:
+            if user_id and user_id != "guest_user":
                 raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Forbidden: Cannot access another user's progress data.",
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Authentication required to access user progress data.",
                 )
 
-        user_sessions = [s for s in _SESSION_HISTORY if s["user_id"] == user_id]
+        user_sessions = [s for s in _SESSION_HISTORY if s["user_id"] == target_user_id]
 
         if not user_sessions:
             return {

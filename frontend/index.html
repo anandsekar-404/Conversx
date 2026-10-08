@@ -3010,6 +3010,15 @@
 
     // Matchmaking Flow
     function startMatchmakingForTopic(topicId) {
+      if (!googleAuthService.isAuthenticated() || !googleAuthService.isOnboardingCompleted()) {
+        if (!googleAuthService.isAuthenticated()) {
+          authModal.classList.add('open');
+        } else {
+          openOnboardingModal(googleAuthService.getUser());
+        }
+        return;
+      }
+
       const topic = getTopicById(topicId);
       document.getElementById('findingTopicTitle').textContent = `Topic: ${topic.title}`;
       setDiscStage('finding');
@@ -3021,7 +3030,7 @@
       });
 
       // Add local user with public ConversX ID
-      const localHandle = googleAuthService.getPublicHandle() || '@chellamae';
+      const localHandle = googleAuthService.getPublicHandle() || '@speaker';
       discRoom.addParticipant({
         id: 'user_local',
         name: `${localHandle} (YOU)`,

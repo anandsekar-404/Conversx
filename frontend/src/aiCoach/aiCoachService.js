@@ -244,7 +244,13 @@ class AICoachService {
   }
 
   _getAuthToken() {
-    return window.__conversx_jwt_token || null;
+    if (typeof window !== 'undefined' && window.__conversx_jwt_token) {
+      return window.__conversx_jwt_token;
+    }
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('conversx_token') || null;
+    }
+    return null;
   }
 }
 
