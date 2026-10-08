@@ -1,0 +1,102 @@
+name: ConversX CI (Tests & Security)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Backend Pytest & Migrations
+  # ---------------------------------------------------------------------------
+  backend-test:
+    name: Backend Tests & Security
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: conversx
+          POSTGRES_PASSWORD: ci_test_password
+          POSTGRES_DB: conversx
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U conversx"
+          --health-interval 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "backend/requirements.txt"
+
+      - name: Install Backend Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r backend/requirements.txt -r backend/requirements-dev.txt
+
+      - name: Run Alembic Migrations
+        env:
+          DATABASE_URL: postgresql://conversx:ci_test_password@localhost:5432/conversx
+        run: |
+          alembic -c backend/alembic.ini upgrade head
+
+      - name: Run Pytest Suite
+        env:
+          DATABASE_URL: postgresql://conversx:ci_test_password@localhost:5432/conversx
+          REDIS_URL: redis://localhost:6379/0
+          APP_ENV: test
+          APP_SECRET_KEY: test-secret-phase7-ci-key
+          JWT_SECRET_KEY: test-jwt-secret-phase7-ci-token-valid-len
+        run: |
+          pytest backend/tests -v
+
+  # ---------------------------------------------------------------------------
+  # 2. Frontend Node.js Test Suite
+  # ---------------------------------------------------------------------------
+  frontend-test:
+    name: Frontend Tests (Moderation, Practice, Voice)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run Frontend Moderation Tests
+        run: node frontend/tests/test_moderation.js
+
+      - name: Run Frontend Practice Engine Tests
+        run: node frontend/tests/test_practice.js
+
+      - name: Run Frontend Voice Coach Tests
+        run: node frontend/tests/test_voice.js
+
+      - name: Run Frontend Production Architecture Tests
+        run: node frontend/tests/test_production.js
+
+  # ---------------------------------------------------------------------------
+  # 3. Secret & Privacy Audit
+  # ---------------------------------------------------------------------------
+  secret-scan:
+    name: Secret & Privacy Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2.3.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

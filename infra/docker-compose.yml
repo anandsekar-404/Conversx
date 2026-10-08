@@ -144,7 +144,7 @@ services:
       resources:
         limits:
           cpus: "2.00"      # full 2-core burst for STT inference during active job
-          memory: 3584M     # holds faster-whisper + Detoxify models comfortably
+          memory: 3584M     # holds faster-whisper model comfortably
         reservations:
           memory: 512M
 
@@ -222,12 +222,63 @@ services:
 # ---------------------------------------------------------------------------
 # Named volumes (model caches persisted across runs)
 # ---------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # Nginx Reverse Proxy (Oracle Cloud VM Entrypoint)
+  # Terminates HTTPS / SSL, applies security headers, routes to FastAPI.
+  # ---------------------------------------------------------------------------
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: conversx-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - certbot_certs:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.20"
+          memory: 128M
+        reservations:
+          cpus: "0.05"
+          memory: 32M
+    networks:
+      - default
+
+  # ---------------------------------------------------------------------------
+  # Certbot - Automated SSL Renewal (Let's Encrypt ACME)
+  # ---------------------------------------------------------------------------
+  certbot:
+    image: certbot/certbot:v2.11.0
+    container_name: conversx-certbot
+    restart: unless-stopped
+    volumes:
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: >
+      /bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done;'
+    networks:
+      - default
+
+networks:
+  default:
+    name: conversx-internal
+    driver: bridge
+
 volumes:
+  certbot_certs:
+  certbot_www:
   postgres_data:
   redis_data:
   audio_tmp:       # ephemeral; swept by cron every 15 min for orphaned files
   whisper_models:  # faster-whisper model weights
   ollama_models:   # Ollama model weights
-  hf_cache:        # Hugging Face cache (Detoxify, tokenizers, etc.)
+  hf_cache:        # Hugging Face cache (whisper tokenizers, etc.)
   prometheus_data:
   uptime_kuma_data:

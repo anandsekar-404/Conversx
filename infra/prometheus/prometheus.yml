@@ -2,6 +2,9 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
+rule_files:
+  - "alert_rules.yml"
+
 scrape_configs:
   - job_name: conversx-api
     static_configs:
@@ -10,7 +13,7 @@ scrape_configs:
 
   - job_name: conversx-worker
     static_configs:
-      - targets: ["worker:9091"]   # worker exposes metrics on secondary port
+      - targets: ["worker:9091"]
     metrics_path: /metrics
 
   - job_name: prometheus

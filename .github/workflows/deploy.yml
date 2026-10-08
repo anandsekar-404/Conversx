@@ -1,0 +1,76 @@
+name: ConversX CD (Production Deployment)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Frontend Deployment to Vercel
+  # ---------------------------------------------------------------------------
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        if: env.VERCEL_TOKEN != ''
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: "--prod"
+          working-directory: ./frontend
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+  # ---------------------------------------------------------------------------
+  # 2. Backend Deployment to Oracle Cloud VM
+  # ---------------------------------------------------------------------------
+  deploy-backend:
+    name: Deploy Backend to Oracle VM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Execute Remote Deployment via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        if: env.ORACLE_SSH_KEY != ''
+        with:
+          host: ${{ secrets.ORACLE_VM_HOST }}
+          username: ${{ secrets.ORACLE_VM_USER }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          script: |
+            set -e
+            cd /opt/conversx
+
+            echo "[deploy] Pulling latest repository updates..."
+            git pull origin main
+
+            echo "[deploy] Pulling updated container images..."
+            docker compose -f infra/docker-compose.yml pull api worker
+
+            echo "[deploy] Executing database migrations..."
+            docker compose -f infra/docker-compose.yml run --rm api alembic -c backend/alembic.ini upgrade head
+
+            echo "[deploy] Restarting services with zero downtime..."
+            docker compose -f infra/docker-compose.yml up -d --remove-orphans
+
+            echo "[deploy] Running readiness health check..."
+            for i in {1..30}; do
+              if curl -fsS https://api.conversx.com/health | grep -q '"status":"ok"'; then
+                echo "[deploy] Service is healthy and responsive."
+                break
+              fi
+              echo "Waiting for API readiness... ($i/30)"
+              sleep 2
+            done
+
+            echo "[deploy] Running automated production smoke tests..."
+            docker compose -f infra/docker-compose.yml run --rm api pytest tests/production/smoke/ -v
+
+            echo "[deploy] Deployment complete and verified."
+        env:
+          ORACLE_SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}

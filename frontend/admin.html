@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ConversX — Moderation Rules Admin Console</title>
+  <meta name="description" content="Admin management console for Firebase Firestore moderation rules. Manage bad words, harassment phrases, severity levels, categories, and suggestions.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand-wrapper">
+        <div class="brand-logo-icon" style="background: linear-gradient(135deg, var(--accent-purple), var(--primary-indigo));">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Moderation Admin Console</h1>
+          <p>Firebase Firestore Centralized Rule Repository</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button id="btnOpenAddModal" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          + Add New Rule
+        </button>
+        <button id="btnSyncFirestore" class="btn btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+          </svg>
+          Sync / Refresh
+        </button>
+        <a href="index.html" class="btn btn-secondary">← Back to Practice Studio</a>
+      </div>
+    </header>
+
+    <!-- Metrics Grid -->
+    <div class="admin-metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Total Bad Words</div>
+        <div class="metric-val" id="metricBadWordsCount">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Harassment Patterns</div>
+        <div class="metric-val" id="metricPatternsCount">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Active Categories</div>
+        <div class="metric-val" id="metricCategoriesCount">9</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Rule Repository Source</div>
+        <div class="metric-val" style="font-size: 1.2rem; color: var(--safe-emerald);" id="metricSource">Firestore Ready</div>
+      </div>
+    </div>
+
+    <!-- Live Testing Sandbox for Admins -->
+    <section class="glass-card" style="margin-bottom: 28px;">
+      <div class="card-title-row">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Live Sandbox — Instant Rule Matcher
+        </h2>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Verify new rules against test sentences immediately</span>
+      </div>
+      <div style="display: flex; gap: 14px; align-items: center;">
+        <input type="text" id="sandboxInput" class="admin-input" style="flex: 1;" placeholder="Enter test phrase (e.g. 'You are completely useless in our team')">
+        <button id="btnRunSandbox" class="btn btn-primary" style="white-space: nowrap;">Test Rules</button>
+      </div>
+      <div id="sandboxResult" style="margin-top: 14px; font-size: 0.85rem; display: none;"></div>
+    </section>
+
+    <!-- Rule Management Table Section -->
+    <section class="glass-card">
+      <div class="admin-toolbar">
+        <div class="admin-filters">
+          <input type="text" id="searchFilter" class="admin-input" placeholder="Search word or phrase..." style="width: 220px;">
+          
+          <select id="typeFilter" class="admin-select">
+            <option value="all">All Types</option>
+            <option value="word">Bad Words</option>
+            <option value="phrase">Harassment Patterns</option>
+          </select>
+
+          <select id="categoryFilter" class="admin-select">
+            <option value="all">All Categories</option>
+          </select>
+
+          <select id="severityFilter" class="admin-select">
+            <option value="all">All Severities</option>
+            <option value="1">Severity 1 (Mild)</option>
+            <option value="2">Severity 2 (Warning)</option>
+            <option value="3">Severity 3 (Harmful)</option>
+            <option value="4">Severity 4 (Severe)</option>
+          </select>
+
+          <select id="statusFilter" class="admin-select">
+            <option value="all">All Status</option>
+            <option value="active">Active Only</option>
+            <option value="inactive">Inactive Only</option>
+          </select>
+        </div>
+
+        <span id="filteredCountLabel" style="font-size: 0.8rem; color: var(--text-muted);">
+          Showing 0 rules
+        </span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Rule Target (Word / Phrase)</th>
+              <th>Category</th>
+              <th>Severity</th>
+              <th>Lang</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rulesTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Add Rule Modal -->
+  <div class="modal-overlay" id="addRuleModal">
+    <div class="modal-content">
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 20px;">Add New Moderation Rule</h3>
+      
+      <form id="addRuleForm">
+        <div class="form-group">
+          <label for="ruleTypeSelect">Rule Type</label>
+          <select id="ruleTypeSelect" class="admin-select" style="width: 100%;">
+            <option value="word">Bad Word (Exact Token Match)</option>
+            <option value="phrase">Harassment Pattern (Multi-word Phrase)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="ruleText">Target Text</label>
+          <input type="text" id="ruleText" class="admin-input" style="width: 100%;" required placeholder="e.g. incompetent, you are useless">
+        </div>
+
+        <div class="form-group">
+          <label for="ruleCategory">Category</label>
+          <select id="ruleCategory" class="admin-select" style="width: 100%;" required>
+            <option value="insult">insult</option>
+            <option value="profanity">profanity</option>
+            <option value="personal_attack">personal_attack</option>
+            <option value="threat">threat</option>
+            <option value="harassment">harassment</option>
+            <option value="sexual_harassment">sexual_harassment</option>
+            <option value="bullying">bullying</option>
+            <option value="hate_or_abuse">hate_or_abuse</option>
+            <option value="aggressive_language">aggressive_language</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="ruleSeverity">Severity Level</label>
+          <select id="ruleSeverity" class="admin-select" style="width: 100%;">
+            <option value="1">1 — Mild</option>
+            <option value="2" selected>2 — Warning</option>
+            <option value="3">3 — Harmful</option>
+            <option value="4">4 — Severe Threat / Abuse</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="ruleLanguage">Language Code</label>
+          <select id="ruleLanguage" class="admin-select" style="width: 100%;">
+            <option value="en">English (en)</option>
+            <option value="hi">Hindi (hi)</option>
+            <option value="ta">Tamil (ta)</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="ruleActive" checked>
+          <label for="ruleActive" style="margin-bottom: 0; cursor: pointer;">Rule Active immediately</label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" id="btnCancelModal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Rule to Firestore</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      loadRules,
+      getCachedRules,
+      analyzeCommunication
+    } from './src/moderation/index.js';
+    import { firebaseRuleService } from './src/firebase.js';
+
+    // DOM Elements
+    const metricBadWordsCount = document.getElementById('metricBadWordsCount');
+    const metricPatternsCount = document.getElementById('metricPatternsCount');
+    const metricCategoriesCount = document.getElementById('metricCategoriesCount');
+    const metricSource = document.getElementById('metricSource');
+
+    const searchFilter = document.getElementById('searchFilter');
+    const typeFilter = document.getElementById('typeFilter');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const severityFilter = document.getElementById('severityFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const filteredCountLabel = document.getElementById('filteredCountLabel');
+    const rulesTableBody = document.getElementById('rulesTableBody');
+
+    const btnOpenAddModal = document.getElementById('btnOpenAddModal');
+    const btnCancelModal = document.getElementById('btnCancelModal');
+    const addRuleModal = document.getElementById('addRuleModal');
+    const addRuleForm = document.getElementById('addRuleForm');
+    const btnSyncFirestore = document.getElementById('btnSyncFirestore');
+
+    const sandboxInput = document.getElementById('sandboxInput');
+    const btnRunSandbox = document.getElementById('btnRunSandbox');
+    const sandboxResult = document.getElementById('sandboxResult');
+
+    let allRules = { badWords: [], harassmentPatterns: [], categories: [] };
+
+    async function initAdmin() {
+      allRules = await loadRules();
+      populateCategoryDropdown();
+      renderDashboard();
+    }
+
+    function populateCategoryDropdown() {
+      categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+      const cats = allRules.categories || [
+        'insult', 'profanity', 'personal_attack', 'threat', 'harassment',
+        'sexual_harassment', 'bullying', 'hate_or_abuse', 'aggressive_language'
+      ];
+      cats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        categoryFilter.appendChild(opt);
+      });
+      metricCategoriesCount.textContent = cats.length;
+    }
+
+    function renderDashboard() {
+      const badWords = allRules.badWords || [];
+      const patterns = allRules.harassmentPatterns || [];
+
+      metricBadWordsCount.textContent = badWords.length;
+      metricPatternsCount.textContent = patterns.length;
+      metricSource.textContent = allRules.source === 'firebase_backend' ? 'Firestore Connected' : 'Local Seed Synced';
+
+      // Combine for table view
+      const combined = [
+        ...badWords.map(w => ({ ...w, _type: 'word', text: w.word })),
+        ...patterns.map(p => ({ ...p, _type: 'phrase', text: p.phrase }))
+      ];
+
+      // Filter
+      const searchVal = searchFilter.value.trim().toLowerCase();
+      const typeVal = typeFilter.value;
+      const catVal = categoryFilter.value;
+      const sevVal = severityFilter.value;
+      const statVal = statusFilter.value;
+
+      const filtered = combined.filter(item => {
+        if (searchVal && !item.text.toLowerCase().includes(searchVal)) return false;
+        if (typeVal !== 'all' && item._type !== typeVal) return false;
+        if (catVal !== 'all' && item.category !== catVal) return false;
+        if (sevVal !== 'all' && String(item.severity) !== sevVal) return false;
+        if (statVal === 'active' && item.active === false) return false;
+        if (statVal === 'inactive' && item.active !== false) return false;
+        return true;
+      });
+
+      filteredCountLabel.textContent = `Showing ${filtered.length} of ${combined.length} rules`;
+
+      rulesTableBody.innerHTML = '';
+      if (filtered.length === 0) {
+        rulesTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-faint);">No moderation rules match the current filters.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(rule => {
+        const tr = document.createElement('tr');
+        const isActive = rule.active !== false;
+
+        let badgeClass = 'badge-safe';
+        if (rule.severity === 1) badgeClass = 'badge-mild';
+        if (rule.severity === 2) badgeClass = 'badge-warning';
+        if (rule.severity === 3) badgeClass = 'badge-harmful';
+        if (rule.severity >= 4) badgeClass = 'badge-severe';
+
+        tr.innerHTML = `
+          <td><span style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:var(--text-muted);">${rule._type}</span></td>
+          <td><strong style="color:var(--text-main); font-family:var(--font-mono);">${escapeHtml(rule.text)}</strong></td>
+          <td><span style="background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:4px; font-size:0.75rem;">${escapeHtml(rule.category)}</span></td>
+          <td><span class="badge-tag ${badgeClass}" style="padding:2px 8px; font-size:0.75rem;">Sev ${rule.severity}</span></td>
+          <td><span style="font-size:0.75rem; color:var(--text-muted);">${rule.language || 'en'}</span></td>
+          <td>
+            <button class="btn btn-secondary btn-toggle-active" data-id="${rule.id || rule.text}" data-type="${rule._type}" data-active="${isActive}" style="padding:2px 8px; font-size:0.75rem; border-color:${isActive ? 'var(--safe-emerald)' : 'var(--text-faint)'};">
+              ${isActive ? '● Active' : '○ Inactive'}
+            </button>
+          </td>
+          <td>
+            <button class="btn btn-secondary btn-delete-rule" data-id="${rule.id || rule.text}" data-type="${rule._type}" style="padding:3px 8px; font-size:0.75rem; color:var(--harmful-rose);">
+              Delete
+            </button>
+          </td>
+        `;
+        rulesTableBody.appendChild(tr);
+      });
+
+      // Attach actions
+      document.querySelectorAll('.btn-toggle-active').forEach(btn => {
+        btn.onclick = () => toggleRule(btn.dataset.type, btn.dataset.id, btn.dataset.active === 'true');
+      });
+
+      document.querySelectorAll('.btn-delete-rule').forEach(btn => {
+        btn.onclick = () => deleteRule(btn.dataset.type, btn.dataset.id);
+      });
+    }
+
+    function toggleRule(type, id, currentActive) {
+      if (type === 'word') {
+        const item = allRules.badWords.find(w => (w.id === id || w.word === id));
+        if (item) item.active = !currentActive;
+      } else {
+        const item = allRules.harassmentPatterns.find(p => (p.id === id || p.phrase === id));
+        if (item) item.active = !currentActive;
+      }
+      renderDashboard();
+    }
+
+    function deleteRule(type, id) {
+      if (!confirm(`Are you sure you want to delete rule "${id}"?`)) return;
+      if (type === 'word') {
+        allRules.badWords = allRules.badWords.filter(w => (w.id !== id && w.word !== id));
+      } else {
+        allRules.harassmentPatterns = allRules.harassmentPatterns.filter(p => (p.id !== id && p.phrase !== id));
+      }
+      renderDashboard();
+    }
+
+    // Modal
+    btnOpenAddModal.onclick = () => { addRuleModal.style.display = 'flex'; };
+    btnCancelModal.onclick = () => { addRuleModal.style.display = 'none'; };
+
+    addRuleForm.onsubmit = (e) => {
+      e.preventDefault();
+      const type = document.getElementById('ruleTypeSelect').value;
+      const text = document.getElementById('ruleText').value.trim();
+      const category = document.getElementById('ruleCategory').value;
+      const severity = Number(document.getElementById('ruleSeverity').value);
+      const language = document.getElementById('ruleLanguage').value;
+      const active = document.getElementById('ruleActive').checked;
+
+      if (!text) return;
+
+      if (type === 'word') {
+        allRules.badWords.push({
+          id: `custom_w_${Date.now()}`,
+          word: text.toLowerCase(),
+          category,
+          severity,
+          language,
+          active
+        });
+      } else {
+        allRules.harassmentPatterns.push({
+          id: `custom_p_${Date.now()}`,
+          phrase: text.toLowerCase(),
+          category,
+          severity,
+          language,
+          active
+        });
+      }
+
+      addRuleModal.style.display = 'none';
+      addRuleForm.reset();
+      renderDashboard();
+    };
+
+    // Filter Listeners
+    [searchFilter, typeFilter, categoryFilter, severityFilter, statusFilter].forEach(el => {
+      el.addEventListener('input', renderDashboard);
+      el.addEventListener('change', renderDashboard);
+    });
+
+    btnSyncFirestore.onclick = async () => {
+      btnSyncFirestore.textContent = 'Syncing...';
+      allRules = await loadRules(true);
+      btnSyncFirestore.textContent = 'Sync / Refresh';
+      renderDashboard();
+    };
+
+    // Live Sandbox
+    btnRunSandbox.onclick = () => {
+      const text = sandboxInput.value.trim();
+      if (!text) return;
+
+      const res = analyzeCommunication(text, allRules);
+      sandboxResult.style.display = 'block';
+
+      if (res.severity === 0) {
+        sandboxResult.innerHTML = `
+          <div style="padding:12px; border-radius:8px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); color:var(--safe-emerald);">
+            ✓ <strong>SAFE</strong> (Score: 100). No rules matched.
+          </div>`;
+      } else {
+        const matchesHtml = res.matchedRules.map(m => 
+          `<span style="background:rgba(255,255,255,0.08); padding:3px 8px; border-radius:4px; margin-right:6px;">"${escapeHtml(m.match)}" (${m.category}, Sev ${m.severity})</span>`
+        ).join('');
+
+        sandboxResult.innerHTML = `
+          <div style="padding:12px; border-radius:8px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); color:#fca5a5;">
+            ⚠️ <strong>TRIGGERED (${res.severityLabel}, Score: ${res.score})</strong>: ${res.matchedCount} rule(s) hit:
+            <div style="margin-top:8px;">${matchesHtml}</div>
+          </div>`;
+      }
+    };
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    initAdmin();
+  </script>
+</body>
+</html>

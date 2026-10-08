@@ -1,7 +1,6 @@
 # =============================================================================
 # ConversX Backend — Production dependencies
 # All versions pinned. Run `pip-audit -r requirements.txt` to check for CVEs.
-# CPU-only torch is installed separately in Dockerfile (see above).
 # =============================================================================
 
 # Web framework
@@ -43,8 +42,6 @@ spacy==3.8.3
 # STT — faster-whisper (Week 5+)
 faster-whisper==1.2.1
 
-# Toxicity model — Detoxify (Week 6+)
-detoxify==0.5.2
 
 # Common password list check (Week 2+)
 # Using a lightweight wordlist; hibp-downloader or a static list
@@ -53,3 +50,6 @@ zxcvbn==4.4.28
 # Utilities
 python-dotenv==1.0.1
 tenacity==9.0.0             # retries
+
+# Centralized rule database - Firebase
+firebase-admin==6.6.0

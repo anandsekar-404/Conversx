@@ -36,7 +36,7 @@ All model inference and runtime dependencies are explicitly pinned to ensure rep
 | **faster-whisper** | `1.2.1` | pip package | `backend/requirements.txt` | CTranslate2-backed STT engine (int8 CPU execution) |
 | **ctranslate2** | `4.8.2` | pip package | Transitive dep of `faster-whisper==1.2.1` | Fast inference engine for Whisper on CPU |
 | **Ollama** | `0.35.1` (`ollama/ollama:0.35.1`) | `sha256:292ee7945dfc3d5840a181f3ab86fedb1e66703e02c8af98b50f4da56b7e278c` | `infra/docker-compose.yml` | Local CPU LLM runner (pinned image tag) |
-| **Detoxify** | `0.5.2` (model: `original`) | pip package | `backend/requirements.txt` | Toxicity moderation (BERT-base, PyTorch) |
+| **Moderation Engine** | `Rule-based` (Firebase Firestore) | In-memory Engine | `backend/app/services/moderation.py` | 100% Deterministic token & phrase moderation (D-011) |
 | **PyTorch** | `2.5.1+cpu` | pip package | `backend/Dockerfile` | CPU-only wheel via pytorch.org/whl/cpu (~2 GB saved) |
 | **Python** | `3.11-slim` | `python:3.11-slim` | `backend/Dockerfile` | Base runtime environment |
 | **PostgreSQL** | `16.15-alpine` (`postgres:16.15-alpine`) | `sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea` | `infra/docker-compose.yml` | Internal transactional database |
@@ -84,7 +84,12 @@ All model inference and runtime dependencies are explicitly pinned to ensure rep
 
 ---
 
-## Toxicity Model — Detoxify (to be measured)
+## Moderation Engine — Deterministic Rule-Based (Firebase Firestore)
+Per Master Prompt (D-011), the ML/AI-based Detoxify and PyTorch pipeline was completely removed in favor of a 100% deterministic rule-based engine using Firebase Firestore as the centralized rule repository.
+- **Latency:** < 1 ms (local in-memory matching with token-boundary regex)
+- **RAM Footprint:** < 15 MB (eliminating ~750 MB–1 GB BERT model overhead)
+- **Determinism:** 100% reproducible scoring without AI hallucinations
+- **Governance:** Firebase Firestore collections (`badWords`, `harassmentPatterns`, `categories`, `severityLevels`, `improvementSuggestions`) with full admin CRUD
 
 | Model | Architecture | Estimated RAM | Status |
 |---|---|---|---|
@@ -101,7 +106,7 @@ All model inference and runtime dependencies are explicitly pinned to ensure rep
 |---|---|---|---|
 | faster-whisper (base/small int8) | 0.7–1.3 GB | 0.4–0.9 GB | — |
 | Ollama + 1–3B Q4 | 1.5–3.0 GB | 1.0–1.9 GB | — |
-| Detoxify toxicity model | 0.4–0.8 GB | 0.5–1.0 GB | — |
+| Rule-based moderation engine | < 0.02 GB | < 0.02 GB | Measured: < 15 MB |
 | PostgreSQL | 0.6 GB | 0.4–0.6 GB | — |
 | Redis | 0.2 GB | 0.1–0.2 GB | — |
 | API + worker processes | 1.2 GB | 0.8–1.2 GB | — |

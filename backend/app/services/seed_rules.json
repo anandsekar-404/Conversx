@@ -1,0 +1,350 @@
+{
+  "categories": [
+    "insult",
+    "profanity",
+    "personal_attack",
+    "threat",
+    "harassment",
+    "sexual_harassment",
+    "bullying",
+    "hate_or_abuse",
+    "aggressive_language"
+  ],
+  "category_details": [
+    {
+      "id": "insult",
+      "description": "Words or phrases that disparage, belittle, or insult an individual."
+    },
+    {
+      "id": "profanity",
+      "description": "Crude, vulgar, or obscene language unsuitable for constructive communication."
+    },
+    {
+      "id": "personal_attack",
+      "description": "Direct attacks targeting a person rather than their actions or ideas."
+    },
+    {
+      "id": "threat",
+      "description": "Expressions of intention to inflict harm, violence, or severe negative action."
+    },
+    {
+      "id": "harassment",
+      "description": "Persistent unwanted behavior or intimidating language."
+    },
+    {
+      "id": "sexual_harassment",
+      "description": "Unwanted or inappropriate comments of a sexual or suggestive nature."
+    },
+    {
+      "id": "bullying",
+      "description": "Coercive or exclusionary language intended to demean or isolate someone."
+    },
+    {
+      "id": "hate_or_abuse",
+      "description": "Demeaning language targeting identity, background, or protected status."
+    },
+    {
+      "id": "aggressive_language",
+      "description": "Hostile, dismissive, or excessively combative phrasing."
+    }
+  ],
+  "severity_levels": [
+    {
+      "level": 0,
+      "name": "Safe",
+      "description": "Respectful, constructive, and professional language."
+    },
+    {
+      "level": 1,
+      "name": "Mild",
+      "description": "Minor informal friction or mildly blunt phrasing."
+    },
+    {
+      "level": 2,
+      "name": "Warning",
+      "description": "Noticeably aggressive or casually insulting language."
+    },
+    {
+      "level": 3,
+      "name": "Harmful",
+      "description": "Direct personal attacks, bullying, or harassment."
+    },
+    {
+      "level": 4,
+      "name": "Severe",
+      "description": "Explicit threats, severe hate speech, or abuse."
+    }
+  ],
+  "bad_words": [
+    {
+      "word": "useless",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "stupid",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "idiot",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "moron",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "dumb",
+      "category": "insult",
+      "severity": 1,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "loser",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "worthless",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "pathetic",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "incompetent",
+      "category": "aggressive_language",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "clueless",
+      "category": "aggressive_language",
+      "severity": 1,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "shut up",
+      "category": "aggressive_language",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "trash",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "disgusting",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "kill",
+      "category": "threat",
+      "severity": 4,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "destroy",
+      "category": "threat",
+      "severity": 3,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "hurt",
+      "category": "threat",
+      "severity": 3,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "fool",
+      "category": "insult",
+      "severity": 1,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "clown",
+      "category": "insult",
+      "severity": 1,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "word": "pagal",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "hi"
+    },
+    {
+      "word": "bewakoof",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "hi"
+    },
+    {
+      "word": "muttal",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "ta"
+    }
+  ],
+  "harassment_patterns": [
+    {
+      "phrase": "you are useless",
+      "category": "personal_attack",
+      "severity": 3,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "your idea is stupid",
+      "category": "insult",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "you have no brain",
+      "category": "personal_attack",
+      "severity": 3,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "nobody likes you",
+      "category": "bullying",
+      "severity": 3,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "i will hurt you",
+      "category": "threat",
+      "severity": 4,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "i will destroy you",
+      "category": "threat",
+      "severity": 4,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "get lost",
+      "category": "aggressive_language",
+      "severity": 1,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "you never know anything",
+      "category": "aggressive_language",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "you are a waste of time",
+      "category": "harassment",
+      "severity": 3,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "you should be fired",
+      "category": "aggressive_language",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "don't ever talk to me",
+      "category": "aggressive_language",
+      "severity": 2,
+      "active": true,
+      "language": "en"
+    },
+    {
+      "phrase": "you will regret this",
+      "category": "threat",
+      "severity": 3,
+      "active": true,
+      "language": "en"
+    }
+  ],
+  "improvement_suggestions": {
+    "insult": {
+      "category": "insult",
+      "suggestion": "Express disagreement with the idea or outcome without attacking the person.",
+      "example": "I don't agree with this approach. Could we consider another solution?"
+    },
+    "personal_attack": {
+      "category": "personal_attack",
+      "suggestion": "Focus on the specific work challenge rather than personal traits.",
+      "example": "I'm concerned about how this project is progressing. Let's look at where we can make improvements together."
+    },
+    "aggressive_language": {
+      "category": "aggressive_language",
+      "suggestion": "Frame your request constructively to invite collaboration rather than resistance.",
+      "example": "Could we pause to align our perspectives and discuss what is needed to move forward?"
+    },
+    "threat": {
+      "category": "threat",
+      "suggestion": "De-escalate the situation. State your boundaries and expectations calmly.",
+      "example": "Let us take a brief pause and return to this discussion with a constructive mindset."
+    },
+    "bullying": {
+      "category": "bullying",
+      "suggestion": "Practice supportive, inclusive workplace communication.",
+      "example": "Everyone brings valuable input to the team. Let's ensure every perspective is considered objectively."
+    },
+    "harassment": {
+      "category": "harassment",
+      "suggestion": "Maintain clear professional boundaries and respectful language.",
+      "example": "Let's focus strictly on the project goals and keep our exchange professional."
+    },
+    "profanity": {
+      "category": "profanity",
+      "suggestion": "Replace profanity with clear, professional terms that convey urgency without disrespect.",
+      "example": "This situation requires urgent attention so that we avoid potential complications."
+    }
+  }
+}

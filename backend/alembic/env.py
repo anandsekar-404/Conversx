@@ -1,4 +1,7 @@
-"""Alembic environment — reads DATABASE_URL from environment at runtime."""
+"""
+Alembic Environment - Reads DATABASE_URL from environment at runtime.
+Phase 7 Production Hardening.
+"""
 from __future__ import annotations
 
 import os
@@ -14,10 +17,12 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Import all model metadata here (populated in Week 2+)
-# from app.models.base import Base
-# target_metadata = Base.metadata
-target_metadata = None  # Week 1 — no models yet
+# Import model metadata
+try:
+    from app.models.entities import Base
+    target_metadata = Base.metadata if Base is not None else None
+except Exception:
+    target_metadata = None
 
 # Override sqlalchemy.url from environment (secrets never in alembic.ini)
 database_url = os.environ.get("DATABASE_URL")

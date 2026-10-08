@@ -23,10 +23,10 @@ class Settings(BaseSettings):
     # Application
     app_env: str = "development"
     app_secret_key: str
-    app_domain: str = "conversx.example"
-    app_url: str = "https://app.conversx.example"
-    admin_url: str = "https://admin.conversx.example"
-    api_url: str = "https://api.conversx.example"
+    app_domain: str = "conversx.com"
+    app_url: str = "https://conversx.com"
+    admin_url: str = "https://admin.conversx.com"
+    api_url: str = "https://api.conversx.com"
 
     # Database
     database_url: str
@@ -39,11 +39,11 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
-    cookie_domain: str = ".conversx.example"
+    cookie_domain: str = ".conversx.com"
     cookie_secure: bool = False   # True in production
 
     # CORS
-    cors_origins: List[str] = ["https://app.conversx.example"]
+    cors_origins: List[str] = ["https://conversx.com"]
 
     @field_validator("cors_origins", mode="before")
     @classmethod
@@ -62,7 +62,7 @@ class Settings(BaseSettings):
 
     # Brevo
     brevo_api_key: str = ""
-    brevo_from_email: str = "noreply@conversx.example"
+    brevo_from_email: str = "noreply@conversx.com"
     brevo_from_name: str = "ConversX"
     brevo_daily_cap_guard: int = 210
 

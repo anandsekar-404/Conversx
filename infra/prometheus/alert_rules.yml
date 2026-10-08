@@ -1,0 +1,72 @@
+# =============================================================================
+# ConversX Prometheus Production Alerting Rules
+# Phase 7 Production Monitoring & Reliability
+# =============================================================================
+
+groups:
+  - name: conversx_api_alerts
+    rules:
+      - alert: ApiUnavailable
+        expr: up{job="conversx-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ConversX FastAPI service is down"
+          description: "FastAPI process on Oracle VM is unreachable for more than 1 minute."
+
+      - alert: ApiHigh5xxErrorRate
+        expr: (sum(rate(conversx_http_requests_total{status=~"5.."}[5m])) / sum(rate(conversx_http_requests_total[5m]))) * 100 > 5
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Elevated 5xx error rate detected"
+          description: "5xx HTTP responses exceed 5% of all requests over the last 5 minutes."
+
+      - alert: ApiHighLatency
+        expr: histogram_quantile(0.95, sum(rate(conversx_http_request_duration_seconds_bucket[5m])) by (le)) > 2.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Elevated API request latency"
+          description: "95th percentile HTTP latency is above 2.0 seconds for over 5 minutes."
+
+      - alert: DatabaseUnavailable
+        expr: conversx_db_connected == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL database connection failed"
+          description: "FastAPI cannot communicate with conversx-postgres."
+
+      - alert: VoiceAudioProcessingFailures
+        expr: sum(rate(conversx_http_requests_total{path=~".*voice.*", status=~"5.."}[5m])) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Voice Audio STT Processing Failures"
+          description: "Repeated failures detected on Whisper STT voice audio analysis endpoint."
+
+  - name: conversx_system_alerts
+    rules:
+      - alert: SslCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 14
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "SSL certificate expiring in under 14 days"
+          description: "Let's Encrypt TLS certificate for api.conversx.com expires soon. Verify certbot-renew."
+
+      - alert: PostgresBackupMissing
+        expr: time() - conversx_last_successful_backup_timestamp > 86400 * 1.5
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL backup has not succeeded in 36 hours"
+          description: "Automated backup job has not produced a valid backup within the scheduled window."

@@ -3,7 +3,7 @@ scripts/bench_ram.py
 ====================
 Gate A RAM Benchmark for ConversX:
   1. Captures Idle baseline RAM across all running ConversX Docker containers.
-  2. Runs concurrent STT, LLM, and Detoxify moderation workloads.
+  2. Runs concurrent STT, LLM, and rule-based moderation workloads.
   3. Samples memory usage from kernel cgroup (/sys/fs/cgroup/memory.peak)
      with streaming docker stats fallback.
   4. Inspects each container for OOMKilled events.
@@ -176,29 +176,28 @@ def trigger_llm_job(llm_model: str) -> Tuple[str, bool, float, str]:
 
 
 def trigger_moderation_job() -> Tuple[str, bool, float, str]:
-    """Execute Detoxify 'original' (BERT-base) toxicity classification inside conversx-api."""
+    """Execute rule-based communication analysis inside conversx-api."""
     start = time.perf_counter()
     py_cmd = (
-        "import os\n"
-        "os.environ['TORCH_HOME'] = '/home/conversx/.cache/huggingface/torch'\n"
-        "from detoxify import Detoxify\n"
-        "model = Detoxify('original')\n"
-        "res = model.predict(['This is a clean test message.', 'You are completely incompetent and awful!'])\n"
-        "assert 'toxicity' in res and len(res['toxicity']) == 2\n"
+        "from app.services.moderation import get_moderation_service\n"
+        "mod = get_moderation_service()\n"
+        "r1 = mod.analyze_communication('This is a clean test message.')\n"
+        "r2 = mod.analyze_communication('You are useless and incompetent!')\n"
+        "assert r1.status == 'safe' and r2.status in ['warning', 'harmful']\n"
     )
     cmd = ["docker", "exec", "conversx-api", "python", "-c", py_cmd]
     try:
         res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
         elapsed = time.perf_counter() - start
         if res.returncode == 0:
-            return "Moderation (Detoxify original)", True, elapsed, "ok"
+            return "Moderation (Rule-based engine)", True, elapsed, "ok"
         else:
             err = res.stderr.strip() or res.stdout.strip()
-            return "Moderation (Detoxify original)", False, elapsed, f"exit {res.returncode}: {err[:200]}"
+            return "Moderation (Rule-based engine)", False, elapsed, f"exit {res.returncode}: {err[:200]}"
     except subprocess.TimeoutExpired:
-        return "Moderation (Detoxify original)", False, 60.0, "Timeout expired (>60s)"
+        return "Moderation (Rule-based engine)", False, 60.0, "Timeout expired (>60s)"
     except Exception as e:
-        return "Moderation (Detoxify original)", False, time.perf_counter() - start, str(e)
+        return "Moderation (Rule-based engine)", False, time.perf_counter() - start, str(e)
 
 
 def run_concurrent_stress_test(
@@ -210,7 +209,7 @@ def run_concurrent_stress_test(
     Run STT, LLM, and Moderation concurrently while streaming docker stats.
     Returns (peak_container_map, peak_sources_map, streamed_samples, workload_results, oom_status_map).
     """
-    print("\n[bench_ram] Initiating concurrent stress test (STT + LLM + Detoxify original)...", flush=True)
+    print("\n[bench_ram] Initiating concurrent stress test (STT + LLM + Rule-based Moderation)...", flush=True)
 
     samples: List[Dict[str, float]] = []
     stop_sampling = False
@@ -231,7 +230,7 @@ def run_concurrent_stress_test(
         f_llm = executor.submit(trigger_llm_job, llm_model)
         f_mod = executor.submit(trigger_moderation_job)
 
-        futures_map = {f_stt: "STT", f_llm: "LLM", f_mod: "Moderation (Detoxify original)"}
+        futures_map = {f_stt: "STT", f_llm: "LLM", f_mod: "Moderation (Rule-based engine)"}
 
         for f in concurrent.futures.as_completed(futures_map):
             task_name = futures_map[f]
@@ -368,7 +367,7 @@ def main() -> None:
     result_entry = {
         "benchmark": "full_stack_ram",
         "gate_criterion": "Peak RAM <= 8.5 GB with all models loaded & used together",
-        "moderation_model": "Detoxify original (BERT-base)",
+        "moderation_model": "Rule-based Firebase Engine",
         "workloads": [
             {"task": t, "success": ok, "elapsed_s": round(el, 2), "detail": det}
             for t, ok, el, det in workloads

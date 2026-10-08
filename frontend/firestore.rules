@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // ConversX Security Rules (Moderation + Communication Practice Platform)
+    // Conforms to Master Prompt Section 13 (Data Model) & Section 14 (Security)
+    // =========================================================================
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.admin == true || request.auth.token.email.matches('.*@conversx\\.internal$'));
+    }
+
+    // -------------------------------------------------------------------------
+    // 1. Centralized Moderation Rules (Admin Only Writes, Public/Cached Reads)
+    // -------------------------------------------------------------------------
+    match /badWords/{ruleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /harassmentPatterns/{ruleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /severityLevels/{levelId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /improvementSuggestions/{suggestionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. Practice Scenarios & Daily Challenges (Public Reads, Admin Writes)
+    // -------------------------------------------------------------------------
+    match /practiceScenarios/{scenarioId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /dailyChallenges/{challengeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. User Progress & Practice Sessions (Strict User Isolation)
+    // -------------------------------------------------------------------------
+    match /userProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /practiceSessions/{sessionId} {
+      allow read: if isAuthenticated() && (resource == null || resource.data.user_id == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.user_id == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.user_id == request.auth.uid;
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. User Privacy Safeguard
+    // Raw user conversations are NEVER uploaded or stored simply for moderation
+    // -------------------------------------------------------------------------
+    match /userConversations/{docId} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,3561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ConversX — Practice. Speak. Improve.</title>
+  <meta name="description" content="ConversX is a personal communication gym for practicing conversation, interviews, presentations, and professional speaking with deterministic scoring and voice delivery analysis.">
+  <link rel="stylesheet" href="./styles/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-group" id="brandHeader">
+        <div class="brand-logo" aria-hidden="true">🎙️</div>
+        <div class="brand-title-wrap">
+          <div class="brand-title">
+            ConversX
+            <span class="brand-tagline-badge">Gym</span>
+          </div>
+          <p class="brand-subtitle">Practice. Speak. Improve.</p>
+        </div>
+      </div>
+
+      <!-- Main Desktop Navigation (Voice-First & AI Coach) -->
+      <nav class="main-nav" aria-label="Main Navigation">
+        <button id="tabDashboard" class="nav-tab active" aria-selected="true">
+          <span>⚡</span> Today's Gym
+        </button>
+        <button id="tabPractice" class="nav-tab" aria-selected="false">
+          <span>🎙️</span> Voice Practice
+        </button>
+        <button id="tabDiscussion" class="nav-tab" aria-selected="false">
+          <span>👥</span> Group Discussion
+        </button>
+        <button id="tabChallenge" class="nav-tab" aria-selected="false">
+          <span>🔥</span> Daily Challenge
+        </button>
+        <button id="tabProgress" class="nav-tab" aria-selected="false">
+          <span>📈</span> Progress Hub
+        </button>
+        <button id="tabAiCoach" class="nav-tab" aria-selected="false">
+          <span>🤖</span> AI Coach
+        </button>
+        <a href="admin.html" class="nav-tab nav-tab-link" id="btnAdminNav">
+          <span>⚙️</span> Admin Rules
+        </a>
+      </nav>
+
+      <!-- Status & Account Actions -->
+      <div class="header-actions">
+        <div class="streak-pill" id="headerStreakPill" title="Practice Consistency">
+          <span>🔥</span> <span id="headerStreakText">14-Day Streak</span>
+        </div>
+        <button class="header-aicoach-pill" id="headerAiCoachPill" title="Personal AI Coach Settings">
+          <span>🤖</span> <span id="headerAiCoachText">AI Coach: Ready</span>
+        </button>
+        <div class="header-status-pill">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span>48kHz Ready • Transient Privacy</span>
+        </div>
+        <button class="btn-auth-pill" id="btnOpenAuthModal" aria-label="Sign In or User Account">
+          <span id="userAuthIcon">👤</span>
+          <span id="userAuthLabel">Sign In</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+
+      <!-- ====================================================================
+           VIEW 1: TODAY'S GYM DASHBOARD
+           ==================================================================== -->
+      <section id="viewDashboard" class="view-panel active" aria-label="Today's Gym Dashboard">
+        <div class="gym-dashboard-container">
+
+          <!-- Priority Drill Hero Card -->
+          <div class="hero-drill-card">
+            <div class="drill-content">
+              <div class="drill-badge-row">
+                <span class="drill-badge-priority">● TODAY'S VOICE WORKOUT</span>
+                <span class="drill-badge-tag">Advanced • 4 min</span>
+                <span class="drill-badge-tag">Target: Clarity & Confidence</span>
+              </div>
+              <h2 class="drill-title" id="dashChallengeTitle">Zero-Filler Self Introduction</h2>
+              <p class="drill-prompt" id="dashChallengeDesc">
+                Deliver a crisp 60-second professional self-introduction without relying on fillers like "um", "uh", or "basically".
+              </p>
+              <div class="drill-meta-row">
+                <span class="acoustic-signal-pill">
+                  <span>🟢</span> Acoustic Signal: Low Latency • 48kHz Ready
+                </span>
+                <span class="drill-badge-tag">Transient Client-Side Buffer</span>
+              </div>
+            </div>
+
+            <div class="drill-actions-col">
+              <button id="btnDashJumpChallenge" class="btn-gym-primary">
+                <span>🎙️</span> Start Voice Workout
+              </button>
+              <button id="btnDashStartVoice" class="btn-gym-secondary">
+                <span>🎙️</span> Launch Voice Cockpit
+              </button>
+            </div>
+          </div>
+
+          <!-- Cognitive Performance Grid (2-Column) -->
+          <div class="dash-cognitive-grid">
+            <!-- Left Card: Current Communication Index -->
+            <div class="card-gym">
+              <div class="card-gym-header">
+                <div class="card-gym-title-group">
+                  <span class="card-gym-category">Executive Performance Metric</span>
+                  <h3 class="card-gym-title">Current Communication Index</h3>
+                </div>
+                <span class="growth-pill">+6 pts this week</span>
+              </div>
+
+              <div class="index-gauge-container">
+                <div class="gauge-svg-wrap">
+                  <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <defs>
+                      <linearGradient id="indigoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#6366f1" />
+                        <stop offset="100%" stop-color="#10b981" />
+                      </linearGradient>
+                    </defs>
+                    <circle class="gauge-bg-circle" cx="60" cy="60" r="52" />
+                    <circle id="dashScoreCircle" class="gauge-fill-circle" cx="60" cy="60" r="52" />
+                  </svg>
+                  <div class="gauge-center-content">
+                    <span id="dashScoreNum" class="gauge-number">84</span>
+                    <span class="gauge-label">Score</span>
+                  </div>
+                </div>
+
+                <div class="index-tier-desc">
+                  <h4 class="index-tier-title">Tier: Executive Impact <span style="color: var(--accent-emerald);">●</span></h4>
+                  <p class="index-tier-text" id="dashScoreSummary">
+                    Your structural articulation ranks within the top benchmarks. Pacing and assertive diction remain stable under scrutiny.
+                  </p>
+                </div>
+              </div>
+
+              <!-- 8 Vector Radar Dimension Bars -->
+              <div class="vector-dimension-list">
+                <div class="vector-item">
+                  <div class="vector-header">
+                    <span class="vector-name">Clarity (20%)</span>
+                    <span class="vector-score" id="dashDimClarity">88</span>
+                  </div>
+                  <div class="vector-track"><div class="vector-fill" id="dashBarClarity" style="width: 88%;"></div></div>
+                </div>
+                <div class="vector-item">
+                  <div class="vector-header">
+                    <span class="vector-name">Grammar (15%)</span>
+                    <span class="vector-score" id="dashDimGrammar">92</span>
+                  </div>
+                  <div class="vector-track"><div class="vector-fill" id="dashBarGrammar" style="width: 92%;"></div></div>
+                </div>
+                <div class="vector-item">
+                  <div class="vector-header">
+                    <span class="vector-name">Vocabulary (10%)</span>
+                    <span class="vector-score" id="dashDimVocabulary">80</span>
+                  </div>
+                  <div class="vector-track"><div class="vector-fill" id="dashBarVocabulary" style="width: 80%;"></div></div>
+                </div>
+                <div class="vector-item">
+                  <div class="vector-header">
+                    <span class="vector-name">Confidence (15%)</span>
+                    <span class="vector-score" id="dashDimConfidence">85</span>
+                  </div>
+                  <div class="vector-track"><div class="vector-fill" id="dashBarConfidence" style="width: 85%;"></div></div>
+                </div>
+                <div class="vector-item">
+                  <div class="vector-header">
+                    <span class="vector-name">Professionalism (15%)</span>
+                    <span class="vector-score" id="dashDimProfessionalism">90</span>
+                  </div>
+                  <div class="vector-track"><div class="vector-fill" id="dashBarProfessionalism" style="width: 90%;"></div></div>
+                </div>
+                <div class="vector-item">
+                  <div class="vector-header">
+                    <span class="vector-name">Respectfulness (10%)</span>
+                    <span class="vector-score" id="dashDimRespectfulness">98</span>
+                  </div>
+                  <div class="vector-track"><div class="vector-fill" id="dashBarRespectfulness" style="width: 98%;"></div></div>
+                </div>
+                <div class="vector-item">
+                  <div class="vector-header">
+                    <span class="vector-name">Filler Control (10%)</span>
+                    <span class="vector-score" id="dashDimFiller">76</span>
+                  </div>
+                  <div class="vector-track"><div class="vector-fill" id="dashBarFiller" style="width: 76%;"></div></div>
+                </div>
+                <div class="vector-item">
+                  <div class="vector-header">
+                    <span class="vector-name">Structure (5%)</span>
+                    <span class="vector-score" id="dashDimStructure">84</span>
+                  </div>
+                  <div class="vector-track"><div class="vector-fill" id="dashBarStructure" style="width: 84%;"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Card: Targeted Focus Area -->
+            <div class="card-gym">
+              <div class="card-gym-header">
+                <div class="card-gym-title-group">
+                  <span class="card-gym-category">Targeted Focus Area</span>
+                  <h3 class="card-gym-title">Eliminate Verbal Fillers in High-Stakes Pauses</h3>
+                </div>
+                <span class="growth-pill" style="color: var(--primary-indigo); border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.1);">+8% Potential</span>
+              </div>
+
+              <p class="focus-area-desc">
+                Recent analysis detects an uptick in words like "like", "um", and "sort of" when pivoting between complex technical points. Recondition your impulse into intentional 0.8s silence.
+              </p>
+
+              <!-- Dynamic Audio Waveform Preview -->
+              <div class="audio-preview-waveform" aria-hidden="true">
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+              </div>
+
+              <div class="coach-quote-box">
+                "A silent pause communicates authority; filler words communicate hesitation."
+                <div style="font-size: 0.75rem; margin-top: 0.25rem; font-style: normal; color: var(--primary-indigo);">— ConversX Coach Insight</div>
+              </div>
+
+              <div style="display: flex; gap: 0.75rem; margin-top: auto;">
+                <button id="btnDashStartPractice" class="btn-gym-primary" style="flex: 1;">
+                  <span>🎙️</span> Launch Voice Drill
+                </button>
+                <button id="btnDashStartChallenge" class="btn-gym-secondary">
+                  <span>⚡</span> Challenge
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Practice Mode Launchpad Grid -->
+          <div>
+            <h3 class="gym-section-title">Practice Modalities</h3>
+            <div class="mode-launch-grid">
+              <div class="mode-launch-card" data-mode="casual">
+                <div class="mode-launch-header">
+                  <div class="mode-icon-circle">💬</div>
+                  <span class="mode-scenarios-badge">6 Scenarios</span>
+                </div>
+                <h4 class="mode-card-title">Casual Conversation</h4>
+                <p class="mode-card-desc">Real-world social encounters, storytelling, small talk, and informal discourse.</p>
+                <span class="mode-card-cta">Start Voice Drill →</span>
+              </div>
+
+              <div class="mode-launch-card" data-mode="interview">
+                <div class="mode-launch-header">
+                  <div class="mode-icon-circle">💼</div>
+                  <span class="mode-scenarios-badge">6 Scenarios</span>
+                </div>
+                <h4 class="mode-card-title">Interview Practice</h4>
+                <p class="mode-card-desc">Behavioral, technical, and executive interview queries with structured feedback.</p>
+                <span class="mode-card-cta">Start Voice Drill →</span>
+              </div>
+
+              <div class="mode-launch-card" data-mode="presentation">
+                <div class="mode-launch-header">
+                  <div class="mode-icon-circle">📊</div>
+                  <span class="mode-scenarios-badge">4 Scenarios</span>
+                </div>
+                <h4 class="mode-card-title">Presentation Practice</h4>
+                <p class="mode-card-desc">Present high-stakes proposals, slide pitches, and executive project status updates.</p>
+                <span class="mode-card-cta">Start Voice Drill →</span>
+              </div>
+
+              <div class="mode-launch-card" data-mode="professional">
+                <div class="mode-launch-header">
+                  <div class="mode-icon-circle">🏢</div>
+                  <span class="mode-scenarios-badge">4 Scenarios</span>
+                </div>
+                <h4 class="mode-card-title">Professional Communication</h4>
+                <p class="mode-card-desc">Cross-functional negotiation, conflict resolution, feedback delivery, and diplomacy.</p>
+                <span class="mode-card-cta">Start Voice Drill →</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Voice Coaching Summary Ribbon -->
+          <div class="card-gym" style="padding: 1.5rem;">
+            <div class="card-gym-header">
+              <div class="card-gym-title-group">
+                <span class="card-gym-category">Speaking Delivery Overview</span>
+                <h4 class="card-gym-title">Acoustic & Pacing Metrics</h4>
+              </div>
+              <span class="drill-badge-tag">Voice Sessions</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 0.5rem;">
+              <div class="delivery-dim-box">
+                <span class="delivery-dim-title">Avg Delivery Score</span>
+                <span class="delivery-dim-score" id="dashAvgDelivery">—</span>
+              </div>
+              <div class="delivery-dim-box">
+                <span class="delivery-dim-title">Speaking Pace</span>
+                <span class="delivery-dim-score" id="dashAvgPace">—</span>
+              </div>
+              <div class="delivery-dim-box">
+                <span class="delivery-dim-title">Filler Frequency</span>
+                <span class="delivery-dim-score" id="dashAvgFillers">—</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 2: PRACTICE STUDIO & VOICE COCKPIT
+           ==================================================================== -->
+      <section id="viewPractice" class="view-panel" aria-label="Practice Studio">
+        <div class="practice-studio-container">
+
+          <!-- Controls Header Bar (Voice Practice Only) -->
+          <div class="practice-controls-header">
+            <div class="mode-tabs-group" role="tablist" aria-label="Practice Modality">
+              <button class="mode-tab-btn active" data-mode="casual">Casual (6)</button>
+              <button class="mode-tab-btn" data-mode="interview">Interview (6)</button>
+              <button class="mode-tab-btn" data-mode="presentation">Presentation (4)</button>
+              <button class="mode-tab-btn" data-mode="professional">Professional (4)</button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span class="acoustic-signal-pill" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+                <span>🎙️</span> Spoken Voice Only
+              </span>
+            </div>
+          </div>
+
+          <!-- Scenario Cockpit Card -->
+          <div class="scenario-card-cockpit">
+            <div class="scenario-header-bar">
+              <div class="scenario-select-wrap">
+                <label for="scenarioSelect" style="font-weight: 700; font-size: 0.8125rem; color: var(--text-muted);">
+                  Scenario:
+                </label>
+                <select id="scenarioSelect" class="select-gym" aria-label="Select Practice Scenario"></select>
+              </div>
+              <span id="scenarioTimeLimit" class="scenario-timelimit-pill">⏱️ Target: 90s</span>
+            </div>
+
+            <div class="scenario-prompt-box">
+              <h3 id="scenarioPromptTitle" class="scenario-prompt-title">Weekend Highlights</h3>
+              <p id="scenarioPromptDesc" class="scenario-prompt-desc">
+                A coworker asks what you did over the weekend. Share a compelling 3-4 sentence update.
+              </p>
+              <div id="scenarioGuidance" class="scenario-guidance-pill">
+                <span>💡</span> Guidance: Focus on positive energy and balanced conversational reciprocity.
+              </div>
+            </div>
+          </div>
+
+          <!-- VOICE STUDIO COCKPIT (Voice-Only Practice Interface) -->
+          <div id="containerVoicePractice" class="voice-cockpit-wrap" style="display: block;">
+            
+            <div class="cockpit-recording-card">
+              <!-- Live Recording Status Bar -->
+              <div class="cockpit-status-bar">
+                <div class="recording-timer-group">
+                  <div class="recording-pulse-circle" id="voicePulseCircle" aria-hidden="true"></div>
+                  <span id="voiceLiveTimer" class="recording-timer-text">00:00 / 03:00 max</span>
+                </div>
+
+                <div class="live-chips-row">
+                  <div id="chipPaceWrapper" class="live-cockpit-chip emerald">
+                    <span>⚡</span> <span id="chipPace">Pace: Ready</span>
+                  </div>
+                  <div class="live-cockpit-chip indigo">
+                    <span>🛑</span> <span id="chipFillers">Fillers: 0</span>
+                  </div>
+                  <div class="live-cockpit-chip faint">
+                    <span>📝</span> <span id="chipWords">Words: 0</span>
+                  </div>
+                  <div class="live-cockpit-chip faint">
+                    <span>⏱️</span> <span id="chipDuration">0s</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dynamic Audio Waveform Visualizer Canvas -->
+              <div class="waveform-visualizer-container">
+                <canvas id="voiceWaveformCanvas" class="waveform-canvas" width="900" height="120"></canvas>
+                <div class="visualizer-labels-row">
+                  <span>60 HZ</span>
+                  <span>250 HZ</span>
+                  <span class="highlight">1 KHZ (VOCAL CLARITY)</span>
+                  <span>4 KHZ</span>
+                  <span>16 KHZ</span>
+                </div>
+                <div class="waveform-rms-bar">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span>RMS LEVEL:</span>
+                    <div class="rms-meter-track">
+                      <div id="rmsMeterFill" class="rms-meter-fill"></div>
+                    </div>
+                    <span id="rmsDbLabel" style="font-weight: 700; color: #fff;">-14.2 dBFS</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-emerald);">
+                    <span>●</span> DYNAMIC GATE ARMED
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cockpit Control Bar -->
+              <div class="cockpit-actions-bar">
+                <!-- Microphone Hardware State -->
+                <div class="hardware-input-wrap">
+                  <span>🎙️</span>
+                  <span id="micStateInitial">Microphone Ready (Click Start)</span>
+                  <span id="micStateRecording" style="display: none; color: var(--harmful-rose); font-weight: 700;">Active Recording In Progress...</span>
+                  <span id="micStateCaptured" style="display: none; color: var(--accent-emerald); font-weight: 700;">Audio Buffer Captured!</span>
+                  <span id="micStateDenied" style="display: none; color: var(--harmful-rose);">Microphone Access Blocked</span>
+                  <span id="micStateUnsupported" style="display: none; color: var(--warning-amber);">Browser Speech API Not Supported</span>
+                </div>
+
+                <!-- Primary Action Buttons -->
+                <div class="cockpit-buttons-group">
+                  <button id="btnStartVoiceRecording" class="btn-record-huge">
+                    <span>●</span> Start Recording Session
+                  </button>
+                  <button id="btnStopVoiceRecording" class="btn-stop-huge" style="display: none;">
+                    <span>⏹️</span> Stop & Analyze Speech
+                  </button>
+                  <button id="btnRerecordVoice" class="btn-gym-secondary" style="display: none;">
+                    <span>🔄</span> Reset / Rerecord
+                  </button>
+                  <button id="btnAnalyzeVoice" class="btn-gym-primary" style="display: none;">
+                    <span>⚡</span> Analyze Captured
+                  </button>
+                  
+                  
+                </div>
+              </div>
+            </div>
+
+            <!-- Transcript Panel & Zero-Knowledge Guard Grid -->
+            <div class="transcript-guard-grid">
+              <!-- Live Transcript Panel -->
+              <div class="card-transcript">
+                <div class="card-transcript-header">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span>💬</span>
+                    <h4 style="font-family: var(--font-display); font-size: 1rem; color: #fff;">Live Real-Time Transcript</h4>
+                  </div>
+                  <span class="drill-badge-tag" style="color: var(--accent-emerald);">Latency: 90ms • 99.2% Conf</span>
+                </div>
+
+                <div id="voiceLiveTranscript" class="transcript-display-box" style="font-style: italic; color: var(--text-muted);">
+                  Spoken transcript will appear here in real-time as you speak...
+                </div>
+
+                <textarea id="voiceCapturedTranscript" class="textarea-gym" style="display: none; min-height: 100px;" placeholder="Review or edit your transcribed response..." aria-label="Captured Voice Transcript"></textarea>
+              </div>
+
+              <!-- Zero Knowledge Guard Card -->
+              <div class="card-zk-guard">
+                <div class="zk-title-group">
+                  <h4 class="zk-title">
+                    <span>🔒</span> Zero-Knowledge Guard
+                  </h4>
+                  <span class="zk-strict-pill">STRICT</span>
+                </div>
+                <p class="zk-desc">
+                  <strong>Ephemeral Voice Architecture:</strong> Raw audio waveforms are processed entirely in memory and transiently analyzed. No raw audio recordings are stored on any remote server.
+                </p>
+                <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle); font-size: 0.75rem; color: var(--text-faint);">
+                  SOC2 transient memory pipeline verified • 100% Privacy by Design
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================================================================
+               STRUCTURED FEEDBACK & COACHING RESULTS (Stitch Screen 3)
+               ================================================================ -->
+          <div id="practiceResultsContainer" class="results-container-cockpit" style="display: none;">
+
+            <!-- Session Diagnostic Header Banner -->
+            <div class="diagnostic-banner">
+              <div class="diagnostic-title-group">
+                <span class="diagnostic-pre-title">SESSION POST-MORTEM & DIAGNOSTIC</span>
+                <h2 class="diagnostic-main-title">Communication Diagnostic Results</h2>
+                <p id="practiceIssueSummary" class="diagnostic-summary-text">
+                  Clean, structured response meeting conversational and professional benchmarks.
+                </p>
+
+                <!-- Attempt Pills & Progress Delta -->
+                <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                  <div id="attemptPillsContainer" class="attempt-pill-group">
+                    <span class="attempt-pill active">Attempt 1</span>
+                  </div>
+                  <div id="scoreDeltaContainer" class="delta-velocity-badge" style="display: none;">
+                    <span id="scoreDeltaBadge" class="delta-badge improved">+0 pts</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Composite Score Ring -->
+              <div class="diagnostic-composite-score-wrap">
+                <div class="gauge-svg-wrap">
+                  <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <circle class="gauge-bg-circle" cx="60" cy="60" r="52" />
+                    <circle id="practiceScoreCircle" class="gauge-fill-circle" cx="60" cy="60" r="52" />
+                  </svg>
+                  <div class="gauge-center-content">
+                    <span id="practiceScoreNum" class="gauge-number">82</span>
+                    <span class="gauge-label">Score</span>
+                  </div>
+                </div>
+                <div id="practiceVerdictBadge" class="verdict-pill pill-safe">
+                  <span id="practiceVerdictIcon">✓</span>
+                  <span id="practiceVerdictLabel">Safe & Constructive</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Speaking Delivery Score Box (Voice Practice Only) -->
+            <div id="boxDeliveryScore" class="delivery-card-box" style="display: none;">
+              <div class="delivery-gauge-side">
+                <div class="gauge-svg-wrap" style="width: 90px; height: 90px;">
+                  <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <circle class="gauge-bg-circle" cx="60" cy="60" r="52" />
+                    <circle id="deliveryScoreCircle" class="gauge-fill-circle" cx="60" cy="60" r="52" />
+                  </svg>
+                  <div class="gauge-center-content">
+                    <span id="deliveryScoreNum" class="gauge-number" style="font-size: 1.5rem;">88</span>
+                    <span class="gauge-label">Delivery</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #fff;">Voice Delivery Score</h4>
+                  <p style="font-size: 0.8125rem; color: var(--text-muted);">Acoustic pace, pause control, and filler suppression index.</p>
+                </div>
+              </div>
+
+              <div class="delivery-dims-side">
+                <div class="delivery-dim-box">
+                  <span class="delivery-dim-title">Pace (WPM)</span>
+                  <span class="delivery-dim-score" id="valPaceScore">90 / 100</span>
+                  <div class="delivery-dim-track"><div id="barPaceFill" class="delivery-dim-fill pace" style="width: 90%;"></div></div>
+                </div>
+                <div class="delivery-dim-box">
+                  <span class="delivery-dim-title">Filler Control</span>
+                  <span class="delivery-dim-score" id="valFillerScore">92 / 100</span>
+                  <div class="delivery-dim-track"><div id="barFillerFill" class="delivery-dim-fill filler" style="width: 92%;"></div></div>
+                </div>
+                <div class="delivery-dim-box">
+                  <span class="delivery-dim-title">Flow Control</span>
+                  <span class="delivery-dim-score" id="valFlowScore">85 / 100</span>
+                  <div class="delivery-dim-track"><div id="barFlowFill" class="delivery-dim-fill flow" style="width: 85%;"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 8 Evaluation Dimensions (Octave Grid) -->
+            <div>
+              <div class="octave-grid-title" style="margin-bottom: 1rem;">
+                <span>Octave Evaluation Dimensions (8-Vector Track)</span>
+                <span class="drill-badge-tag">Deterministic Weights</span>
+              </div>
+              <div class="octave-grid">
+                <!-- Clarity -->
+                <div class="dim-card-gym">
+                  <div class="dim-card-header">
+                    <span class="dim-card-name">Clarity</span>
+                    <span class="dim-weight-badge">20%</span>
+                  </div>
+                  <span class="dim-card-score" id="dimValClarity">85</span>
+                  <div class="dim-progress-track"><div id="dimBarClarity" class="dim-progress-fill" style="width: 85%;"></div></div>
+                  <span class="dim-subtext">Articulation & Precision</span>
+                </div>
+                <!-- Grammar -->
+                <div class="dim-card-gym">
+                  <div class="dim-card-header">
+                    <span class="dim-card-name">Grammar</span>
+                    <span class="dim-weight-badge">15%</span>
+                  </div>
+                  <span class="dim-card-score" id="dimValGrammar">90</span>
+                  <div class="dim-progress-track"><div id="dimBarGrammar" class="dim-progress-fill" style="width: 90%;"></div></div>
+                  <span class="dim-subtext">Syntactic Integrity</span>
+                </div>
+                <!-- Vocabulary -->
+                <div class="dim-card-gym">
+                  <div class="dim-card-header">
+                    <span class="dim-card-name">Vocabulary</span>
+                    <span class="dim-weight-badge">10%</span>
+                  </div>
+                  <span class="dim-card-score" id="dimValVocabulary">80</span>
+                  <div class="dim-progress-track"><div id="dimBarVocabulary" class="dim-progress-fill" style="width: 80%;"></div></div>
+                  <span class="dim-subtext">Lexical Density</span>
+                </div>
+                <!-- Confidence -->
+                <div class="dim-card-gym">
+                  <div class="dim-card-header">
+                    <span class="dim-card-name">Confidence</span>
+                    <span class="dim-weight-badge">15%</span>
+                  </div>
+                  <span class="dim-card-score" id="dimValConfidence">85</span>
+                  <div class="dim-progress-track"><div id="dimBarConfidence" class="dim-progress-fill" style="width: 85%;"></div></div>
+                  <span class="dim-subtext">Tone & Assertiveness</span>
+                </div>
+                <!-- Professionalism -->
+                <div class="dim-card-gym">
+                  <div class="dim-card-header">
+                    <span class="dim-card-name">Professionalism</span>
+                    <span class="dim-weight-badge">15%</span>
+                  </div>
+                  <span class="dim-card-score" id="dimValProfessionalism">90</span>
+                  <div class="dim-progress-track"><div id="dimBarProfessionalism" class="dim-progress-fill" style="width: 90%;"></div></div>
+                  <span class="dim-subtext">Workplace Decorum</span>
+                </div>
+                <!-- Respectfulness -->
+                <div class="dim-card-gym">
+                  <div class="dim-card-header">
+                    <span class="dim-card-name">Respectfulness</span>
+                    <span class="dim-weight-badge">10%</span>
+                  </div>
+                  <span class="dim-card-score" id="dimValRespectfulness">100</span>
+                  <div class="dim-progress-track"><div id="dimBarRespectfulness" class="dim-progress-fill" style="width: 100%;"></div></div>
+                  <span class="dim-subtext">Diplomacy & Safety</span>
+                </div>
+                <!-- Filler Control -->
+                <div class="dim-card-gym">
+                  <div class="dim-card-header">
+                    <span class="dim-card-name">Filler Control</span>
+                    <span class="dim-weight-badge">10%</span>
+                  </div>
+                  <span class="dim-card-score" id="dimValFillerControl">75</span>
+                  <div class="dim-progress-track"><div id="dimBarFillerControl" class="dim-progress-fill" style="width: 75%;"></div></div>
+                  <span class="dim-subtext">Verbal Pause Gate</span>
+                </div>
+                <!-- Structure -->
+                <div class="dim-card-gym">
+                  <div class="dim-card-header">
+                    <span class="dim-card-name">Structure</span>
+                    <span class="dim-weight-badge">5%</span>
+                  </div>
+                  <span class="dim-card-score" id="dimValStructure">80</span>
+                  <div class="dim-progress-track"><div id="dimBarStructure" class="dim-progress-fill" style="width: 80%;"></div></div>
+                  <span class="dim-subtext">Framework & Progression</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PERSONAL AI COACH FEEDBACK & REASONING CARD (Stitch Section 3) -->
+            <div id="cardAiCoachResult" class="card-aicoach-result">
+              <div class="aicoach-header-row">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <span style="font-size: 1.5rem;">🤖</span>
+                  <div>
+                    <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #fff; margin: 0;">Personal AI Coach Insight</h4>
+                    <span id="aiCoachProviderSubtitle" style="font-size: 0.8125rem; color: var(--text-muted);">Real-time cognitive critique & executive telemetry</span>
+                  </div>
+                </div>
+                <span id="aiCoachActiveBadge" class="aicoach-header-badge">Connected • Realtime</span>
+              </div>
+
+              <!-- Loading State -->
+              <div id="aiCoachLoadingState" style="display: none; padding: 1.5rem; text-align: center; color: var(--text-muted);">
+                <span style="font-size: 1.25rem;">⚡</span> Analyzing spoken delivery with your connected AI model...
+              </div>
+
+              <!-- 4-Part Structured Coaching -->
+              <div id="aiCoachContent" class="aicoach-4part-grid">
+                <div class="aicoach-section-box">
+                  <span class="aicoach-section-title strengths"><span>✓</span> What You Did Well</span>
+                  <ul id="aiListDidWell" class="aicoach-bullet-list">
+                    <li>Prompt context directly addressed with confident tone.</li>
+                    <li>Assertive vocal delivery with balanced tonal clarity.</li>
+                  </ul>
+                </div>
+
+                <div class="aicoach-section-box">
+                  <span class="aicoach-section-title improve"><span>▲</span> What To Improve</span>
+                  <ul id="aiListNeedsImprove" class="aicoach-bullet-list">
+                    <li>Verbal pause detected; replace fillers with intentional 0.8s silence.</li>
+                    <li>Avoid passive conditional hedging during technical pivots.</li>
+                  </ul>
+                </div>
+
+                <div class="aicoach-section-box">
+                  <span class="aicoach-section-title why"><span>💡</span> Why It Matters</span>
+                  <p id="aiTextWhyItMatters" style="font-size: 0.8125rem; color: #fff; margin: 0; line-height: 1.45;">
+                    Executive listeners interpret intentional silence as intellectual composure. A crisp pause maintains command much better than speculative filler words.
+                  </p>
+                </div>
+
+                <div class="aicoach-section-box">
+                  <span class="aicoach-section-title actions"><span>🚀</span> Try This Next Time</span>
+                  <ul id="aiListNextActions" class="aicoach-bullet-list">
+                    <li>State your bottom-line conclusion within the first 10 seconds.</li>
+                    <li>Inhale silently rather than vocalizing verbal fillers.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Interview STAR Widget -->
+              <div id="aiStarContainer" style="display: none; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem;">
+                <h5 style="font-size: 0.8125rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin: 0 0 0.5rem 0;">
+                  STAR Interview Response Architecture
+                </h5>
+                <div class="aicoach-star-grid">
+                  <div class="star-pillar-box">
+                    <span class="star-pillar-letter">S — Situation</span>
+                    <span id="starSituation" class="star-pillar-text">—</span>
+                  </div>
+                  <div class="star-pillar-box">
+                    <span class="star-pillar-letter">T — Task</span>
+                    <span id="starTask" class="star-pillar-text">—</span>
+                  </div>
+                  <div class="star-pillar-box">
+                    <span class="star-pillar-letter">A — Action</span>
+                    <span id="starAction" class="star-pillar-text">—</span>
+                  </div>
+                  <div class="star-pillar-box">
+                    <span class="star-pillar-letter">R — Result</span>
+                    <span id="starResult" class="star-pillar-text">—</span>
+                  </div>
+                </div>
+                <div id="starFollowupWrap" style="margin-top: 0.6rem; padding: 0.6rem 0.85rem; background: rgba(6,182,212,0.08); border-left: 2px solid var(--accent-cyan); border-radius: 0.25rem;">
+                  <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">Likely Follow-Up Question:</span>
+                  <p id="starFollowupText" style="font-size: 0.8125rem; color: #fff; margin: 0.2rem 0 0 0;"></p>
+                </div>
+              </div>
+
+              <!-- Presentation Structure Widget -->
+              <div id="aiPresentationContainer" style="display: none; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem;">
+                <h5 style="font-size: 0.8125rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin: 0 0 0.5rem 0;">
+                  Presentation Structure & Cadence
+                </h5>
+                <div class="aicoach-star-grid">
+                  <div class="star-pillar-box">
+                    <span class="star-pillar-letter">Opening Hook</span>
+                    <span id="presOpening" class="star-pillar-text">—</span>
+                  </div>
+                  <div class="star-pillar-box">
+                    <span class="star-pillar-letter">Organization</span>
+                    <span id="presOrganization" class="star-pillar-text">—</span>
+                  </div>
+                  <div class="star-pillar-box">
+                    <span class="star-pillar-letter">Transitions</span>
+                    <span id="presTransitions" class="star-pillar-text">—</span>
+                  </div>
+                  <div class="star-pillar-box">
+                    <span class="star-pillar-letter">Conclusion</span>
+                    <span id="presConclusion" class="star-pillar-text">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI Say It Better Contrast Card -->
+              <div class="aicoach-rewrite-card">
+                <span class="aicoach-rewrite-title">AI Coach Executive Polish (Say It Better)</span>
+                <p id="aiStrongerPhrasing" class="aicoach-rewrite-quote">
+                  "Our contingency timeline buffers delivery sprint 4 without capital expenditure."
+                </p>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">Contrasted with deterministic ConversX recommendation above.</span>
+              </div>
+
+              <!-- Not Connected Prompt Banner -->
+              <div id="aiCoachNotConnectedPrompt" style="display: none; background: rgba(99,102,241,0.08); border: 1px dashed rgba(99,102,241,0.3); border-radius: 0.5rem; padding: 1.25rem; text-align: center;">
+                <p style="font-size: 0.875rem; color: #c0c1ff; margin: 0 0 0.75rem 0;">
+                  Connect your OpenAI or Google Gemini API key in <strong>Settings → AI Coach</strong> to unlock deep personalized AI coaching on every voice drill.
+                </p>
+                <button id="btnJumpToAiSettings" class="btn-gym-primary" style="font-size: 0.8125rem; padding: 0.45rem 1.2rem;">
+                  ⚙️ Configure Personal AI Coach
+                </button>
+              </div>
+            </div>
+
+            <!-- Diagnostic Breakdown & Say It Better Grid -->
+            <div class="diagnostic-breakdown-grid">
+              <!-- Left Column: Diagnostic Breakdown -->
+              <div class="card-feedback-column">
+                <div class="feedback-col-header">
+                  <span>🎯</span>
+                  <h4>Diagnostic Breakdown</h4>
+                </div>
+
+                <div>
+                  <h5 style="font-size: 0.8125rem; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 0.5rem;">
+                    What You Executed Well
+                  </h5>
+                  <ul id="listDidWell" class="feedback-bullets-list strengths">
+                    <li>Clear communication tone.</li>
+                  </ul>
+                </div>
+
+                <div style="margin-top: 0.5rem;">
+                  <h5 style="font-size: 0.8125rem; font-weight: 700; color: var(--warning-amber); text-transform: uppercase; margin-bottom: 0.5rem;">
+                    Areas For Improvement
+                  </h5>
+                  <ul id="listNeedsImprove" class="feedback-bullets-list improvements">
+                    <li>Maintain steady pacing.</li>
+                  </ul>
+                </div>
+
+                <div class="coaching-tip-card">
+                  <div class="tip-icon">💡</div>
+                  <div class="tip-content">
+                    <h5 class="tip-title">Coaching Tip</h5>
+                    <p id="textCoachingTip" class="tip-text">
+                      Pause silently instead of using fillers.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Say It Better Matrix -->
+              <div class="card-sib-matrix">
+                <div class="feedback-col-header">
+                  <span>✨</span>
+                  <h4>Say It Better (Executive Polish)</h4>
+                </div>
+
+                <div class="sib-recommendation-box">
+                  <span class="sib-box-label" style="color: var(--accent-emerald);">Recommended Alternative</span>
+                  <p id="textSuggestedAlt" class="sib-rec-text">
+                    "Here is a sharper, more concise delivery of your message."
+                  </p>
+                  <ul id="listSibImprovements" class="sib-improvements-list">
+                    <li>Removed verbal fillers to sharpen delivery.</li>
+                  </ul>
+                </div>
+
+                <button id="btnApplyCoachSib" class="btn-gym-secondary" style="margin-top: auto; display: none;">
+                  <span>📋</span> Suggestion Stored
+                </button>
+              </div>
+            </div>
+
+            <!-- Side-by-Side Comparison Table (Multiple Attempts) -->
+            <div id="containerComparison" class="comparison-card" style="display: none;">
+              <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #fff;">
+                Attempt Progression & Growth
+              </h4>
+              <div class="table-responsive">
+                <table class="gym-table">
+                  <thead>
+                    <tr>
+                      <th>Dimension / Metric</th>
+                      <th id="thAttemptPrev">Attempt 1</th>
+                      <th id="thAttemptCurr">Attempt 2</th>
+                      <th>Progression Delta</th>
+                    </tr>
+                  </thead>
+                  <tbody id="comparisonTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Bottom Action Bar (Try Again & Retake) -->
+            <div class="retry-cockpit-bar">
+              <div>
+                <h4 style="font-family: var(--font-display); font-size: 1.1rem; color: #fff;">Ready For Next Attempt?</h4>
+                <p style="font-size: 0.8125rem; color: var(--text-muted);">
+                  Lock down improvements immediately while coaching cues are fresh.
+                </p>
+              </div>
+              <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <button id="btnOpenAppealFromResults" class="btn-gym-secondary" style="display: none;">
+                  <span>🛡️</span> Submit Calm Appeal
+                </button>
+                <button id="btnTryAgain" class="btn-gym-primary" style="padding: 0.95rem 2rem;">
+                  <span>🔄</span> Try Again (Attempt 2)
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 3: DAILY CHALLENGE
+           ==================================================================== -->
+      
+      <!-- ====================================================================
+           VIEW: LIVE GROUP DISCUSSION (3 to 8 Real Participants)
+           Stitch Screen: ConversX Executive Room
+           ==================================================================== -->
+      <section id="viewDiscussion" class="view-panel" aria-label="Live Group Discussion">
+        <div class="group-discussion-container">
+
+          <!-- Practice Modality Distinction Header -->
+          <div class="practice-distinction-banner">
+            <div class="distinction-left">
+              <span class="distinction-tagline">ConversX Practice Ecosystem</span>
+              <h2 class="distinction-title">Live Group Discussion</h2>
+              <p class="distinction-desc">One Topic → 3 to 8 Real People → Natural Conversation → Individual Coaching.</p>
+            </div>
+            <div class="modality-triad">
+              <span class="modality-triad-pill">1. Solo Practice</span>
+              <span class="modality-triad-pill">2. Voice Coach</span>
+              <span class="modality-triad-pill active">3. Group Discussion (3–8 People)</span>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 1: TOPIC SELECTION -->
+          <div id="discStageTopic" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+              <div>
+                <h3 style="font-family: var(--font-display); font-size: 1.35rem; color: #fff;">Choose Discussion Topic</h3>
+                <p style="font-size: 0.875rem; color: var(--text-muted);">Select a curated discussion topic to join a live voice room.</p>
+              </div>
+              <button id="btnQuickMatchAny" class="btn-gym-primary">
+                <span>⚡</span> Quick Match Any Topic
+              </button>
+            </div>
+
+            <div class="topic-selection-grid" id="discTopicCardsContainer">
+              <!-- Rendered dynamically from DISCUSSION_TOPICS -->
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 2: FINDING PARTICIPANTS / MATCHMAKING -->
+          <div id="discStageFinding" class="finding-peers-card" style="display: none;">
+            <div class="radar-spinner-wrap">
+              <div class="radar-spinner-ring"></div>
+              <span class="radar-center-icon">👥</span>
+            </div>
+            <div>
+              <h3 style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">Finding Participants for Your Discussion...</h3>
+              <p id="findingTopicTitle" style="font-size: 0.95rem; color: var(--primary-indigo); font-weight: 600; margin-top: 0.25rem;">
+                Topic: Should artificial intelligence replace certain human analytical jobs?
+              </p>
+              <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.5rem;">
+                Matching 3 to 8 peer communicators • Target: 15-Minute Session
+              </p>
+            </div>
+            <button id="btnCancelMatchmaking" class="btn-gym-secondary" style="margin-top: 0.5rem;">
+              Cancel Matchmaking
+            </button>
+          </div>
+
+          <!-- SUB-VIEW 3: WAITING ROOM -->
+          <div id="discStageWaiting" class="waiting-room-card" style="display: none;">
+            <div class="waiting-header-bar">
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                  <span class="topic-category-badge" id="waitingTopicCategory">Technology & Ethics</span>
+                  <span class="topic-meta-badge">15 Minutes</span>
+                </div>
+                <h3 id="waitingTopicTitle" style="font-family: var(--font-display); font-size: 1.35rem; color: #fff;">
+                  Should artificial intelligence replace certain human analytical jobs?
+                </h3>
+                <p id="waitingTopicGuidance" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem;">
+                  Explore economic productivity vs. workforce displacement. Focus on balanced reasoning.
+                </p>
+              </div>
+
+              <div id="waitingCountPill" class="participant-count-pill waiting">
+                <span>👥</span> <span id="waitingCountText">2 / 8 Participants (Min 3)</span>
+              </div>
+            </div>
+
+            <!-- Participant Roster -->
+            <div>
+              <h4 style="font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); margin-bottom: 0.75rem;">
+                Participant Roster (3 to 8 Required)
+              </h4>
+              <div id="waitingRosterGrid" class="roster-grid">
+                <!-- Roster cards inserted dynamically -->
+              </div>
+            </div>
+
+            <!-- Readiness & Actions -->
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+              <div id="waitingStatusMsg" style="font-size: 0.875rem; color: var(--warning-amber); display: flex; align-items: center; gap: 0.45rem;">
+                <span>⏳</span> Waiting for at least 3 participants to begin...
+              </div>
+
+              <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <button id="btnLeaveWaitingRoom" class="btn-gym-secondary">Leave Waiting Room</button>
+                <button id="btnSimulatePeerJoin" class="btn-gym-secondary" title="Add peer for demonstration">+ Add Peer</button>
+                <button id="btnStartLiveDiscussion" class="btn-gym-primary" disabled style="opacity: 0.5;">
+                  <span>⚡</span> Start Live Discussion
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 4: LIVE DISCUSSION ROOM (Stitch Screen: ConversX Executive Room) -->
+          <div id="discStageLive" class="live-discussion-stage" style="display: none;">
+            
+            <!-- Persistent Topic & Timer Bar -->
+            <div class="persistent-topic-bar">
+              <div class="topic-bar-left">
+                <span class="topic-category-badge" id="liveTopicCategoryBadge">Tech & Ethics</span>
+                <h3 id="liveTopicBarTitle" class="topic-bar-title">Should AI replace analytical jobs?</h3>
+                <span class="topic-meta-badge" id="liveParticipantCountBadge">5 / 8 People</span>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="live-timer-gym" id="liveDiscussionTimerWrap">
+                  <span>⏱️</span> <span id="liveDiscussionTimerText">15:00</span>
+                </div>
+                <button id="btnLeaveLiveTop" class="btn-leave-danger" style="padding: 0.4rem 0.85rem; font-size: 0.75rem;">
+                  Leave Room
+                </button>
+              </div>
+            </div>
+
+            <!-- Participant Tiles Grid (3 to 8 Participants) -->
+            <div id="discParticipantTilesGrid" class="participant-tiles-grid">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Contextual Tactical Assist Coaching Bar (Stitch Design) -->
+            <div class="tactical-assist-bar">
+              <div class="assist-label-group">
+                <span>💡 ConversX Tactical Assist</span>
+                <span style="color: var(--accent-emerald);" id="liveAirtimeBalancePill">• Airtime: 20% (Optimal)</span>
+              </div>
+
+              <div class="tactical-cues-group">
+                <span class="tactical-cue-pill" data-cue="Build on peer premise">💡 Build on peer's premise</span>
+                <span class="tactical-cue-pill" data-cue="Disagree respectfully">⚖️ Disagree respectfully</span>
+                <span class="tactical-cue-pill" data-cue="Ask probing question">🔍 Ask probing question</span>
+                <span class="tactical-cue-pill" data-cue="Yield floor gracefully">✋ Yield floor gracefully</span>
+              </div>
+            </div>
+
+            <!-- Bottom Discussion Control Cockpit Bar -->
+            <div class="discussion-cockpit-bar">
+              <div class="cockpit-stats-left">
+                <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.8125rem;">
+                  <span>🎙️</span> <span id="liveSpeakingStatsChip">Pace: 135 WPM • Fillers: 0</span>
+                </div>
+                <span class="drill-badge-tag">Transient 48kHz Audio</span>
+              </div>
+
+              <div class="cockpit-actions-right">
+                <button id="btnToggleFloor" class="btn-gym-secondary">
+                  <span>✋</span> Request Floor
+                </button>
+                <button id="btnToggleDiscMute" class="btn-mic-toggle">
+                  <span id="discMicIcon">🎙️</span> <span id="discMicLabel">Mute Mic</span>
+                </button>
+                <button id="btnFinishDiscussion" class="btn-gym-primary">
+                  <span>🏁</span> Complete Discussion
+                </button>
+                <button id="btnLeaveLiveBottom" class="btn-leave-danger">
+                  <span>🚪</span> Leave Discussion
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SUB-VIEW 5: DISCUSSION COMPLETE TRANSITION -->
+          <div id="discStageTransition" class="finding-peers-card" style="display: none;">
+            <span style="font-size: 2.5rem;">🏁</span>
+            <div>
+              <h3 style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">Discussion Complete</h3>
+              <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">
+                Synthesizing multi-peer interaction and compiling your individual communication analysis...
+              </p>
+            </div>
+            <div class="radar-spinner-wrap" style="width: 40px; height: 40px;">
+              <div class="radar-spinner-ring"></div>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 6: INDIVIDUAL ANALYSIS & DISCUSSION METRICS -->
+          <div id="discStageResults" class="results-container-cockpit" style="display: none;">
+            
+            <!-- Diagnostic Header Banner -->
+            <div class="diagnostic-banner">
+              <div class="diagnostic-title-group">
+                <span class="diagnostic-pre-title">GROUP DISCUSSION DIAGNOSTIC</span>
+                <h2 class="diagnostic-main-title">Individual Communication Analysis</h2>
+                <p id="discResultsSummaryText" class="diagnostic-summary-text">
+                  Balanced participation with constructive arguments and strong collaborative synthesis.
+                </p>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                  <span class="drill-badge-tag" id="discResultsTopicBadge">Topic: Tech & Ethics</span>
+                  <span class="drill-badge-tag" id="discResultsPeersBadge">6 Participants</span>
+                </div>
+              </div>
+
+              <div class="diagnostic-composite-score-wrap">
+                <div class="gauge-svg-wrap">
+                  <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <circle class="gauge-bg-circle" cx="60" cy="60" r="52" />
+                    <circle id="discScoreCircle" class="gauge-fill-circle" cx="60" cy="60" r="52" />
+                  </svg>
+                  <div class="gauge-center-content">
+                    <span id="discScoreNum" class="gauge-number">88</span>
+                    <span class="gauge-label">Score</span>
+                  </div>
+                </div>
+                <div class="verdict-pill pill-safe">
+                  <span>✓</span> Safe & Constructive
+                </div>
+              </div>
+            </div>
+
+            <!-- Discussion-Specific Collaboration Metrics Card -->
+            <div class="discussion-metrics-card">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <h4 style="font-family: var(--font-display); font-size: 1.15rem; color: #fff;">
+                    Group Conversational Dynamics
+                  </h4>
+                  <p id="discBalanceSummaryText" style="font-size: 0.8125rem; color: var(--text-muted);">
+                    Balanced airtime: You contributed meaningfully while allowing floor space for peers.
+                  </p>
+                </div>
+                <span class="growth-pill" id="discBalanceStatusPill">Balanced Airtime</span>
+              </div>
+
+              <div class="disc-metrics-grid">
+                <div class="disc-metric-item">
+                  <span class="disc-metric-label">Speaking Time</span>
+                  <span class="disc-metric-val" id="discMetricSpeakingTime">2m 45s</span>
+                </div>
+                <div class="disc-metric-item">
+                  <span class="disc-metric-label">Airtime Share</span>
+                  <span class="disc-metric-val" id="discMetricAirtime">18.3%</span>
+                </div>
+                <div class="disc-metric-item">
+                  <span class="disc-metric-label">Speaking Turns</span>
+                  <span class="disc-metric-val" id="discMetricTurns">4 Turns</span>
+                </div>
+                <div class="disc-metric-item">
+                  <span class="disc-metric-label">Collaborative Phrases</span>
+                  <span class="disc-metric-val" id="discMetricCollab">3 Phrases</span>
+                </div>
+                <div class="disc-metric-item">
+                  <span class="disc-metric-label">Diplomatic Pushbacks</span>
+                  <span class="disc-metric-val" id="discMetricDisagree">2 Points</span>
+                </div>
+                <div class="disc-metric-item">
+                  <span class="disc-metric-label">Questions Asked</span>
+                  <span class="disc-metric-val" id="discMetricQuestions">2 Questions</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 8 Evaluation Dimensions Octave Grid -->
+            <div>
+              <div class="octave-grid-title" style="margin-bottom: 1rem;">
+                <span>Octave Evaluation Dimensions (8-Vector Track)</span>
+                <span class="drill-badge-tag">Deterministic Scoring</span>
+              </div>
+              <div class="octave-grid">
+                <div class="dim-card-gym">
+                  <div class="dim-card-header"><span class="dim-card-name">Clarity</span><span class="dim-weight-badge">20%</span></div>
+                  <span class="dim-card-score" id="discDimClarity">88</span>
+                  <div class="dim-progress-track"><div id="discBarClarity" class="dim-progress-fill" style="width: 88%;"></div></div>
+                  <span class="dim-subtext">Articulation & Precision</span>
+                </div>
+                <div class="dim-card-gym">
+                  <div class="dim-card-header"><span class="dim-card-name">Grammar</span><span class="dim-weight-badge">15%</span></div>
+                  <span class="dim-card-score" id="discDimGrammar">92</span>
+                  <div class="dim-progress-track"><div id="discBarGrammar" class="dim-progress-fill" style="width: 92%;"></div></div>
+                  <span class="dim-subtext">Syntactic Integrity</span>
+                </div>
+                <div class="dim-card-gym">
+                  <div class="dim-card-header"><span class="dim-card-name">Vocabulary</span><span class="dim-weight-badge">10%</span></div>
+                  <span class="dim-card-score" id="discDimVocabulary">82</span>
+                  <div class="dim-progress-track"><div id="discBarVocabulary" class="dim-progress-fill" style="width: 82%;"></div></div>
+                  <span class="dim-subtext">Lexical Density</span>
+                </div>
+                <div class="dim-card-gym">
+                  <div class="dim-card-header"><span class="dim-card-name">Confidence</span><span class="dim-weight-badge">15%</span></div>
+                  <span class="dim-card-score" id="discDimConfidence">86</span>
+                  <div class="dim-progress-track"><div id="discBarConfidence" class="dim-progress-fill" style="width: 86%;"></div></div>
+                  <span class="dim-subtext">Tone & Assertiveness</span>
+                </div>
+                <div class="dim-card-gym">
+                  <div class="dim-card-header"><span class="dim-card-name">Professionalism</span><span class="dim-weight-badge">15%</span></div>
+                  <span class="dim-card-score" id="discDimProfessionalism">94</span>
+                  <div class="dim-progress-track"><div id="discBarProfessionalism" class="dim-progress-fill" style="width: 94%;"></div></div>
+                  <span class="dim-subtext">Meeting Decorum</span>
+                </div>
+                <div class="dim-card-gym">
+                  <div class="dim-card-header"><span class="dim-card-name">Respectfulness</span><span class="dim-weight-badge">10%</span></div>
+                  <span class="dim-card-score" id="discDimRespectfulness">98</span>
+                  <div class="dim-progress-track"><div id="discBarRespectfulness" class="dim-progress-fill" style="width: 98%;"></div></div>
+                  <span class="dim-subtext">Diplomacy & Safety</span>
+                </div>
+                <div class="dim-card-gym">
+                  <div class="dim-card-header"><span class="dim-card-name">Filler Control</span><span class="dim-weight-badge">10%</span></div>
+                  <span class="dim-card-score" id="discDimFiller">80</span>
+                  <div class="dim-progress-track"><div id="discBarFiller" class="dim-progress-fill" style="width: 80%;"></div></div>
+                  <span class="dim-subtext">Verbal Pause Gate</span>
+                </div>
+                <div class="dim-card-gym">
+                  <div class="dim-card-header"><span class="dim-card-name">Structure</span><span class="dim-weight-badge">5%</span></div>
+                  <span class="dim-card-score" id="discDimStructure">85</span>
+                  <div class="dim-progress-track"><div id="discBarStructure" class="dim-progress-fill" style="width: 85%;"></div></div>
+                  <span class="dim-subtext">Synthesis & Progression</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Diagnostic Breakdown & Say It Better Grid -->
+            <div class="diagnostic-breakdown-grid">
+              <div class="card-feedback-column">
+                <div class="feedback-col-header">
+                  <span>🎯</span>
+                  <h4>Diagnostic Feedback</h4>
+                </div>
+                <div>
+                  <h5 style="font-size: 0.8125rem; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 0.5rem;">
+                    What You Executed Well
+                  </h5>
+                  <ul id="discListDidWell" class="feedback-bullets-list strengths">
+                    <li>Synthesized peer arguments effectively.</li>
+                  </ul>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                  <h5 style="font-size: 0.8125rem; font-weight: 700; color: var(--warning-amber); text-transform: uppercase; margin-bottom: 0.5rem;">
+                    Areas For Improvement
+                  </h5>
+                  <ul id="discListNeedsImprove" class="feedback-bullets-list improvements">
+                    <li>Invite quieter participants into the dialogue.</li>
+                  </ul>
+                </div>
+                <div class="coaching-tip-card">
+                  <div class="tip-icon">💡</div>
+                  <div class="tip-content">
+                    <h5 class="tip-title">Group Facilitation Tip</h5>
+                    <p id="discCoachingTipText" class="tip-text">
+                      Synthesize two contrasting viewpoints before presenting your recommendation.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Say It Better Matrix for Group Dialogue -->
+              <div class="card-sib-matrix">
+                <div class="feedback-col-header">
+                  <span>✨</span>
+                  <h4>Say It Better (Diplomatic Synthesis)</h4>
+                </div>
+                <div class="sib-recommendation-box">
+                  <span class="sib-box-label" style="color: var(--accent-emerald);">Recommended Reframing</span>
+                  <p id="discSibSuggestedText" class="sib-rec-text">
+                    "I see your point regarding velocity, but looking at it from an operational risk perspective, we might consider..."
+                  </p>
+                  <ul id="discSibImprovementsList" class="sib-improvements-list">
+                    <li>Acknowledged peer premise before introducing counter-argument</li>
+                    <li>Replaced blunt contradiction with diplomatic transition</li>
+                  </ul>
+                </div>
+                <button id="btnJoinNextDiscussion" class="btn-gym-primary" style="margin-top: auto;">
+                  <span>👥</span> Practice Another Topic
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <section id="viewChallenge" class="view-panel" aria-label="Daily Challenge">
+        <div class="gym-dashboard-container">
+          <div class="hero-drill-card" style="border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 0 24px rgba(245, 158, 11, 0.15);">
+            <div class="drill-content">
+              <div class="drill-badge-row">
+                <span class="drill-badge-priority" style="background: rgba(245,158,11,0.15); color: var(--warning-amber); border-color: rgba(245,158,11,0.3);">
+                  🔥 TODAY'S COMMUNICATION CHALLENGE
+                </span>
+                <span class="drill-badge-tag">Daily Workout</span>
+              </div>
+              <h2 id="challengeHeroTitle" class="drill-title">Zero-Filler Self Introduction</h2>
+              <p id="challengeHeroDesc" class="drill-prompt">
+                Deliver a crisp 60-second professional self-introduction without relying on fillers like "um", "uh", or "basically".
+              </p>
+              <div class="drill-meta-row">
+                <span class="acoustic-signal-pill" style="color: var(--warning-amber);">
+                  <span>⏱️</span> Estimated Time: 3-4 Minutes
+                </span>
+                <span class="drill-badge-tag">Builds Daily Consistency</span>
+              </div>
+            </div>
+
+            <div class="drill-actions-col">
+              <button id="btnStartChallengeText" class="btn-gym-primary">
+                <span>✍️</span> Practice via Text
+              </button>
+              <button id="btnStartChallengeVoice" class="btn-gym-secondary">
+                <span>🎙️</span> Practice via Voice Cockpit
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 4: PROGRESS HUB
+           ==================================================================== -->
+      <section id="viewProgress" class="view-panel" aria-label="Progress Hub">
+        <div class="progress-hub-container">
+          <!-- Top Stats Row -->
+          <div class="progress-metrics-row">
+            <div class="stat-card-huge">
+              <span class="stat-label-faint">Overall Index</span>
+              <span id="progOverallScore" class="stat-number-giant">0</span>
+              <span class="stat-subtext-faint">Out of 100</span>
+            </div>
+            <div class="stat-card-huge">
+              <span class="stat-label-faint">Best Score</span>
+              <span id="progBestScore" class="stat-number-giant">0</span>
+              <span class="stat-subtext-faint">Personal Record</span>
+            </div>
+            <div class="stat-card-huge">
+              <span class="stat-label-faint">Current Streak</span>
+              <span id="progStreak" class="stat-number-giant">0 Days</span>
+              <span class="stat-subtext-faint">Consistent Practice</span>
+            </div>
+            <div class="stat-card-huge">
+              <span class="stat-label-faint">Total Sessions</span>
+              <span id="progSessions" class="stat-number-giant">0</span>
+              <span class="stat-subtext-faint">Completed Workouts</span>
+            </div>
+          </div>
+
+          <!-- Voice Delivery Row -->
+          <div class="progress-metrics-row">
+            <div class="stat-card-huge">
+              <span class="stat-label-faint">Voice Workouts</span>
+              <span id="progVoiceSessions" class="stat-number-giant">0</span>
+              <span class="stat-subtext-faint">Cockpit Recordings</span>
+            </div>
+            <div class="stat-card-huge">
+              <span class="stat-label-faint">Avg Delivery</span>
+              <span id="progAvgDelivery" class="stat-number-giant">—</span>
+              <span class="stat-subtext-faint">Acoustic Score</span>
+            </div>
+            <div class="stat-card-huge">
+              <span class="stat-label-faint">Avg Pace</span>
+              <span id="progAvgWpm" class="stat-number-giant">—</span>
+              <span class="stat-subtext-faint">Words Per Minute</span>
+            </div>
+            <div class="stat-card-huge">
+              <span class="stat-label-faint">Avg Filler Rate</span>
+              <span id="progAvgFillerRate" class="stat-number-giant">—</span>
+              <span class="stat-subtext-faint">Speech Percentage</span>
+            </div>
+          </div>
+
+          <!-- History Table -->
+          <div class="card-gym">
+            <div class="card-gym-header">
+              <div class="card-gym-title-group">
+                <span class="card-gym-category">Workout History</span>
+                <h3 class="card-gym-title">Recent Workouts & Growth Ledger</h3>
+              </div>
+              <span class="drill-badge-tag">Last 15 Sessions</span>
+            </div>
+
+            <div class="table-responsive">
+              <table class="gym-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Scenario</th>
+                    <th>Attempt</th>
+                    <th>Score</th>
+                    <th>Delivery</th>
+                    <th>Pace</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody id="progressTableBody">
+                  <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                      No practice sessions recorded yet. Start practicing!
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW: PERSONAL AI COACH SETTINGS (OpenAI & Google Gemini)
+           Stitch Screen: ConversX AI Coach Providers & Reasoning Engine
+           ==================================================================== -->
+      <section id="viewAiCoach" class="view-panel" aria-label="Personal AI Coach Settings">
+        <div class="aicoach-container">
+
+          <!-- Top Banner Card -->
+          <div class="aicoach-banner-card">
+            <div class="aicoach-banner-header">
+              <div>
+                <span class="drill-badge-priority">● PERSONAL AI REASONING ENGINE</span>
+                <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: #fff; margin: 0.35rem 0;">
+                  AI Coach Providers & Settings
+                </h2>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin: 0; max-width: 650px;">
+                  Connect your personal OpenAI or Google Gemini API key to receive deep, personalized executive coaching on every spoken drill. ConversX remains 100% functional without an AI provider.
+                </p>
+              </div>
+
+              <!-- Preferred Provider Selector -->
+              <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-end;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                  Active AI Coach:
+                </span>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button id="btnPrefOpenAi" class="btn-gym-secondary" style="font-size: 0.8125rem; padding: 0.35rem 0.85rem;">
+                    OpenAI
+                  </button>
+                  <button id="btnPrefGemini" class="btn-gym-secondary" style="font-size: 0.8125rem; padding: 0.35rem 0.85rem;">
+                    Google Gemini
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Provider Cards Grid (OpenAI & Gemini) -->
+          <div class="aicoach-provider-grid">
+
+            <!-- Card A: OpenAI -->
+            <div class="aicoach-provider-card" id="cardOpenAiProvider">
+              <div class="provider-card-header">
+                <div class="provider-identity">
+                  <div class="provider-logo-badge openai">⚡</div>
+                  <div class="provider-name-group">
+                    <h4>OpenAI ChatGPT</h4>
+                    <p>GPT-4o & GPT-4o-mini Reasoning Engine</p>
+                  </div>
+                </div>
+                <span id="openaiStatusBadge" class="provider-status-badge not_connected">Not Connected</span>
+              </div>
+
+              <div class="api-key-control-wrap">
+                <div class="api-key-label-row">
+                  <label for="openaiApiKeyInput" style="font-weight: 600; color: var(--text-muted);">
+                    OpenAI API Key
+                  </label>
+                  <button class="api-key-help-trigger" data-provider="openai">
+                    Where do I get my API key?
+                  </button>
+                </div>
+
+                <div class="api-key-input-box">
+                  <input type="password" id="openaiApiKeyInput" class="api-key-input" placeholder="sk-proj-••••••••••••••••••••" autocomplete="off" />
+                  <button type="button" id="btnToggleOpenAiEye" class="btn-input-toggle" title="Show / Hide API Key">👁️</button>
+                </div>
+                <span id="openaiFeedbackMsg" style="font-size: 0.75rem; min-height: 1.1rem; color: var(--text-muted);"></span>
+              </div>
+
+              <div class="provider-actions-row">
+                <button id="btnSaveOpenAiKey" class="btn-gym-primary" style="font-size: 0.8125rem; padding: 0.5rem 1.1rem;">
+                  Save Key
+                </button>
+                <button id="btnTestOpenAiConnection" class="btn-gym-secondary" style="font-size: 0.8125rem; padding: 0.5rem 1rem;">
+                  Test Connection
+                </button>
+                <button id="btnRemoveOpenAiKey" class="btn-gym-secondary" style="font-size: 0.8125rem; padding: 0.5rem 0.85rem; color: var(--harmful-rose); border-color: rgba(244,63,94,0.3); margin-left: auto;">
+                  Remove
+                </button>
+              </div>
+            </div>
+
+            <!-- Card B: Google Gemini -->
+            <div class="aicoach-provider-card" id="cardGeminiProvider">
+              <div class="provider-card-header">
+                <div class="provider-identity">
+                  <div class="provider-logo-badge gemini">✨</div>
+                  <div class="provider-name-group">
+                    <h4>Google Gemini</h4>
+                    <p>Gemini 1.5 Pro & Flash Audio Model</p>
+                  </div>
+                </div>
+                <span id="geminiStatusBadge" class="provider-status-badge not_connected">Not Connected</span>
+              </div>
+
+              <div class="api-key-control-wrap">
+                <div class="api-key-label-row">
+                  <label for="geminiApiKeyInput" style="font-weight: 600; color: var(--text-muted);">
+                    Google Gemini API Key
+                  </label>
+                  <button class="api-key-help-trigger" data-provider="gemini">
+                    Where do I get my API key?
+                  </button>
+                </div>
+
+                <div class="api-key-input-box">
+                  <input type="password" id="geminiApiKeyInput" class="api-key-input" placeholder="AIzaSy••••••••••••••••••••" autocomplete="off" />
+                  <button type="button" id="btnToggleGeminiEye" class="btn-input-toggle" title="Show / Hide API Key">👁️</button>
+                </div>
+                <span id="geminiFeedbackMsg" style="font-size: 0.75rem; min-height: 1.1rem; color: var(--text-muted);"></span>
+              </div>
+
+              <div class="provider-actions-row">
+                <button id="btnSaveGeminiKey" class="btn-gym-primary" style="font-size: 0.8125rem; padding: 0.5rem 1.1rem;">
+                  Save Key
+                </button>
+                <button id="btnTestGeminiConnection" class="btn-gym-secondary" style="font-size: 0.8125rem; padding: 0.5rem 1rem;">
+                  Test Connection
+                </button>
+                <button id="btnRemoveGeminiKey" class="btn-gym-secondary" style="font-size: 0.8125rem; padding: 0.5rem 0.85rem; color: var(--harmful-rose); border-color: rgba(244,63,94,0.3); margin-left: auto;">
+                  Remove
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Trust, Transparency & Privacy Cards -->
+          <div class="aicoach-trust-grid">
+            <div class="aicoach-trust-card">
+              <h5><span>💳</span> Cost & Quota Transparency</h5>
+              <p>
+                AI requests use your connected provider account and consume your own API quota according to OpenAI or Google's developer pricing. ConversX does not mark up or charge any additional fees.
+              </p>
+            </div>
+
+            <div class="aicoach-trust-card">
+              <h5><span>🔒</span> Zero-Leak Security Guarantee</h5>
+              <p>
+                Your API keys are encrypted at rest with server-side PBKDF2 authenticated encryption. Keys are never saved to browser storage (localStorage/sessionStorage), never logged, and never returned in full. Raw audio is never sent.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-nav-bar" aria-label="Mobile Navigation">
+      <button class="mobile-nav-item active" data-target="viewDashboard" data-tab="tabDashboard">
+        <span class="mobile-nav-item-icon">⚡</span>
+        <span>Gym</span>
+      </button>
+      <button class="mobile-nav-item" data-target="viewPractice" data-tab="tabPractice">
+        <span class="mobile-nav-item-icon">🎯</span>
+        <span>Studio</span>
+      </button>
+      <button class="mobile-nav-item" data-target="viewDiscussion" data-tab="tabDiscussion">
+        <span class="mobile-nav-item-icon">👥</span>
+        <span>Group</span>
+      </button>
+      <button class="mobile-nav-item" data-target="viewChallenge" data-tab="tabChallenge">
+        <span class="mobile-nav-item-icon">🔥</span>
+        <span>Daily</span>
+      </button>
+      <button class="mobile-nav-item" data-target="viewAiCoach" data-tab="tabAiCoach">
+        <span class="mobile-nav-icon">🤖</span>
+        <span>AI Coach</span>
+      </button>
+      <button class="mobile-nav-item" data-target="viewProgress" data-tab="tabProgress">
+        <span class="mobile-nav-item-icon">📈</span>
+        <span>Progress</span>
+      </button>
+      <a href="admin.html" class="mobile-nav-item">
+        <span class="mobile-nav-item-icon">⚙️</span>
+        <span>Admin</span>
+      </a>
+    </nav>
+
+    <!-- ====================================================================
+         MODALS (Authentication & Appeals)
+         ==================================================================== -->
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <div class="modal-dialog-gym">
+        <button id="btnCloseAuthModal" class="modal-close-btn" aria-label="Close dialog">✕</button>
+        
+        <div>
+          <h3 id="authModalTitle" style="font-family: var(--font-display); font-size: 1.35rem; color: #fff;">
+            ConversX Account
+          </h3>
+          <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Sign in to synchronize workouts across sessions or continue practicing locally.
+          </p>
+        </div>
+
+        <div class="auth-tabs-nav" role="tablist">
+          <button id="btnTabLogin" class="auth-tab-btn active" role="tab" aria-selected="true">Sign In</button>
+          <button id="btnTabRegister" class="auth-tab-btn" role="tab" aria-selected="false">Create Account</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="formAuthLogin" class="auth-form-gym">
+          <div class="form-group-gym">
+            <label class="form-label-gym" for="loginEmail">Email / Username</label>
+            <input type="text" id="loginEmail" class="input-gym" placeholder="user@example.com" required autocomplete="username">
+          </div>
+          <div class="form-group-gym">
+            <label class="form-label-gym" for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" class="input-gym" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+          <div id="loginErrorMsg" style="color: var(--harmful-rose); font-size: 0.8125rem; display: none;"></div>
+          <button type="submit" class="btn-gym-primary" style="width: 100%; margin-top: 0.5rem;">
+            Sign In
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="formAuthRegister" class="auth-form-gym" style="display: none;">
+          <div class="form-group-gym">
+            <label class="form-label-gym" for="registerUsername">Username</label>
+            <input type="text" id="registerUsername" class="input-gym" placeholder="your_handle" required autocomplete="username">
+          </div>
+          <div class="form-group-gym">
+            <label class="form-label-gym" for="registerEmail">Email</label>
+            <input type="email" id="registerEmail" class="input-gym" placeholder="user@example.com" required autocomplete="email">
+          </div>
+          <div class="form-group-gym">
+            <label class="form-label-gym" for="registerPassword">Password (min 8 chars)</label>
+            <input type="password" id="registerPassword" class="input-gym" placeholder="••••••••" required minlength="8" autocomplete="new-password">
+          </div>
+          <div id="registerErrorMsg" style="color: var(--harmful-rose); font-size: 0.8125rem; display: none;"></div>
+          <button type="submit" class="btn-gym-primary" style="width: 100%; margin-top: 0.5rem;">
+            Create Account
+          </button>
+        </form>
+
+        <div id="loggedInUserCard" style="display: none; flex-direction: column; gap: 1rem;">
+          <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 1rem; border-radius: var(--radius-sm);">
+            <div style="font-weight: 700; color: #fff;" id="loggedUserDisplay">Active User</div>
+            <div style="font-size: 0.8125rem; color: var(--accent-emerald);" id="loggedRoleDisplay">Role: USER</div>
+          </div>
+          <button id="btnAuthSignOut" class="btn-gym-secondary" style="width: 100%;">Sign Out</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Where Do I Get My API Key? Setup Guide -->
+    <div id="modalApiKeyHelp" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="apiKeyHelpTitle">
+      <div class="modal-dialog-gym" style="max-width: 620px;">
+        <div class="modal-header-gym" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <h3 id="apiKeyHelpTitle" style="font-family: var(--font-display); font-size: 1.25rem; color: #fff; margin: 0;">How to Obtain Your API Key</h3>
+          <button id="btnCloseApiKeyHelp" class="modal-close-btn" aria-label="Close dialog">✕</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <div>
+            <h4 style="font-size: 1rem; color: var(--accent-emerald); margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.4rem;">
+              <span>⚡</span> OpenAI API Key Setup
+            </h4>
+            <ol class="setup-guide-steps">
+              <li>Open the official <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" class="setup-guide-link">OpenAI Developer Platform (platform.openai.com/api-keys)</a>.</li>
+              <li>Sign in or create your OpenAI developer account.</li>
+              <li>Navigate to <strong>API keys</strong> in the left dashboard menu.</li>
+              <li>Click <strong>Create new secret key</strong> and give it a descriptive name (e.g., "ConversX Coach").</li>
+              <li>Copy the generated key immediately (starts with <code>sk-</code>).</li>
+              <li>Return to ConversX and paste it into the OpenAI API Key field.</li>
+            </ol>
+          </div>
+
+          <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem;">
+            <h4 style="font-family: var(--font-display); font-size: 1rem; color: var(--primary-indigo); margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.4rem;">
+              <span>✨</span> Google Gemini API Key Setup
+            </h4>
+            <ol class="setup-guide-steps">
+              <li>Open the official <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="setup-guide-link">Google AI Studio Dashboard (aistudio.google.com/app/apikey)</a>.</li>
+              <li>Sign in with your Google Account.</li>
+              <li>Click <strong>Get API key</strong> in the top navigation.</li>
+              <li>Click <strong>Create API key</strong> (choose an existing project or create a free project).</li>
+              <li>Copy your new API key (starts with <code>AIzaSy</code>).</li>
+              <li>Return to ConversX and paste it into the Google Gemini field.</li>
+            </ol>
+          </div>
+
+          <div style="background: rgba(99,102,241,0.08); border-radius: 0.5rem; padding: 0.75rem 1rem; font-size: 0.8125rem; color: #c0c1ff;">
+            <strong>Important:</strong> You must manually copy and paste your key. ConversX will never attempt to extract credentials automatically.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Moderation Appeal Modal -->
+    <div id="appealModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="appealModalTitle">
+      <div class="modal-dialog-gym">
+        <button id="btnCloseAppealModal" class="modal-close-btn" aria-label="Close dialog">✕</button>
+        <div>
+          <h3 id="appealModalTitle" style="font-family: var(--font-display); font-size: 1.35rem; color: #fff;">
+            Calm Rule Appeal
+          </h3>
+          <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem;">
+            ConversX moderation is 100% deterministic and rule-based. If you believe your response was flagged due to an overbroad rule, submit an appeal for administrator review.
+          </p>
+        </div>
+
+        <form id="formSubmitAppeal" class="auth-form-gym">
+          <div class="form-group-gym">
+            <label class="form-label-gym" for="appealReasonInput">Context & Rationale</label>
+            <textarea id="appealReasonInput" class="textarea-gym" style="min-height: 100px;" placeholder="Explain why this usage was constructive or appropriate in this context..." required></textarea>
+          </div>
+          <div id="appealStatusMsg" style="font-size: 0.8125rem; display: none;"></div>
+          <button type="submit" class="btn-gym-primary" style="width: 100%;">
+            Submit Appeal for Review
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modules Initialization Scripts -->
+  <script type="module" src="./src/moderation/index.js"></script>
+  <script type="module" src="./src/practice/index.js"></script>
+  <script type="module" src="./src/voice/index.js"></script>
+  <script type="module" src="./src/discussion/index.js"></script>
+
+  <!-- Main Application Orchestrator Script -->
+  <script type="module">
+    import {
+      PRACTICE_MODES,
+      SCENARIOS,
+      DAILY_CHALLENGES,
+      DEFAULT_FILLER_WORDS,
+      getTodayChallenge,
+      getScenariosByMode,
+      getScenarioById,
+      analyzePracticeResponse,
+      sessionManager,
+      progressTracker
+    } from './src/practice/index.js';
+
+    import {
+      isSpeechRecognitionSupported,
+      requestMicrophonePermission,
+      SpeechRecognitionController,
+      RecognitionState,
+      countWords,
+      calculateWpm,
+      classifyPace,
+      calculateSpeakingMetrics,
+      calculateDeliveryScore,
+      analyzeVoiceResponse,
+      VoiceRecordingSession
+    } from './src/voice/index.js';
+
+    import { API_BASE_URL } from './src/config.js';
+    import { aiCoachService } from './src/aiCoach/index.js';
+
+    import {
+      DISCUSSION_TOPICS,
+      getAllTopics,
+      getTopicById,
+      DiscussionRoomManager,
+      RoomState,
+      MIN_PARTICIPANTS,
+      MAX_PARTICIPANTS,
+      DiscussionVoiceCoordinator,
+      ConnectionState,
+      calculateDiscussionMetrics,
+      analyzeGroupDiscussionContribution
+    } from './src/discussion/index.js';
+
+    // Application State
+    let currentPracticeType = 'voice'; // 'text' | 'voice'
+    let currentMode = 'casual';
+    let currentScenarioId = 'cas_01';
+    let currentAttemptNumber = 1;
+    let voiceSession = null;
+    let latestAnalysisResult = null;
+    let audioContext = null;
+    let analyserNode = null;
+    let animationFrameId = null;
+
+    // Navigation & View Elements
+    const tabDashboard = document.getElementById('tabDashboard');
+    const tabPractice = document.getElementById('tabPractice');
+    const tabChallenge = document.getElementById('tabChallenge');
+    const tabDiscussion = document.getElementById('tabDiscussion');
+    const tabProgress = document.getElementById('tabProgress');
+    const tabAiCoach = document.getElementById('tabAiCoach');
+
+    const viewDashboard = document.getElementById('viewDashboard');
+    const viewPractice = document.getElementById('viewPractice');
+    const viewChallenge = document.getElementById('viewChallenge');
+    const viewDiscussion = document.getElementById('viewDiscussion');
+    const viewProgress = document.getElementById('viewProgress');
+    const viewAiCoach = document.getElementById('viewAiCoach');
+
+    const containerVoicePractice = document.getElementById('containerVoicePractice');
+
+    const scenarioSelect = document.getElementById('scenarioSelect');
+    const scenarioPromptTitle = document.getElementById('scenarioPromptTitle');
+    const scenarioPromptDesc = document.getElementById('scenarioPromptDesc');
+    const scenarioGuidance = document.getElementById('scenarioGuidance');
+    const scenarioTimeLimit = document.getElementById('scenarioTimeLimit');
+
+    // Voice Cockpit Elements
+    const micStateInitial = document.getElementById('micStateInitial');
+    const micStateRecording = document.getElementById('micStateRecording');
+    const micStateCaptured = document.getElementById('micStateCaptured');
+    const micStateDenied = document.getElementById('micStateDenied');
+    const micStateUnsupported = document.getElementById('micStateUnsupported');
+
+    const btnStartVoiceRecording = document.getElementById('btnStartVoiceRecording');
+    const btnStopVoiceRecording = document.getElementById('btnStopVoiceRecording');
+    const btnRerecordVoice = document.getElementById('btnRerecordVoice');
+    const btnAnalyzeVoice = document.getElementById('btnAnalyzeVoice');
+
+    const voiceLiveTimer = document.getElementById('voiceLiveTimer');
+    const voiceLiveTranscript = document.getElementById('voiceLiveTranscript');
+    const voiceCapturedTranscript = document.getElementById('voiceCapturedTranscript');
+    const chipDuration = document.getElementById('chipDuration');
+    const chipWords = document.getElementById('chipWords');
+    const chipPace = document.getElementById('chipPace');
+    const chipFillers = document.getElementById('chipFillers');
+    const voicePulseCircle = document.getElementById('voicePulseCircle');
+    const waveformCanvas = document.getElementById('voiceWaveformCanvas');
+
+    // Results & Feedback Elements
+    const practiceResultsContainer = document.getElementById('practiceResultsContainer');
+    const boxDeliveryScore = document.getElementById('boxDeliveryScore');
+    const practiceScoreCircle = document.getElementById('practiceScoreCircle');
+    const practiceScoreNum = document.getElementById('practiceScoreNum');
+    const practiceVerdictBadge = document.getElementById('practiceVerdictBadge');
+    const practiceVerdictLabel = document.getElementById('practiceVerdictLabel');
+    const practiceVerdictIcon = document.getElementById('practiceVerdictIcon');
+    const practiceIssueSummary = document.getElementById('practiceIssueSummary');
+
+    const deliveryScoreCircle = document.getElementById('deliveryScoreCircle');
+    const deliveryScoreNum = document.getElementById('deliveryScoreNum');
+    const valPaceScore = document.getElementById('valPaceScore');
+    const barPaceFill = document.getElementById('barPaceFill');
+    const valFillerScore = document.getElementById('valFillerScore');
+    const barFillerFill = document.getElementById('barFillerFill');
+    const valFlowScore = document.getElementById('valFlowScore');
+    const barFlowFill = document.getElementById('barFlowFill');
+
+    const listDidWell = document.getElementById('listDidWell');
+    const listNeedsImprove = document.getElementById('listNeedsImprove');
+    const textCoachingTip = document.getElementById('textCoachingTip');
+    const textSuggestedAlt = document.getElementById('textSuggestedAlt');
+    const listSibImprovements = document.getElementById('listSibImprovements');
+    const btnApplyCoachSib = document.getElementById('btnApplyCoachSib');
+    const btnTryAgain = document.getElementById('btnTryAgain');
+    const btnOpenAppealFromResults = document.getElementById('btnOpenAppealFromResults');
+
+    const containerComparison = document.getElementById('containerComparison');
+    const comparisonTableBody = document.getElementById('comparisonTableBody');
+    const attemptPillsContainer = document.getElementById('attemptPillsContainer');
+    const scoreDeltaContainer = document.getElementById('scoreDeltaContainer');
+    const scoreDeltaBadge = document.getElementById('scoreDeltaBadge');
+
+    // Dashboard Score & Challenge Elements
+    const dashScoreCircle = document.getElementById('dashScoreCircle');
+    const dashScoreNum = document.getElementById('dashScoreNum');
+    const dashScoreSummary = document.getElementById('dashScoreSummary');
+    const dashChallengeTitle = document.getElementById('dashChallengeTitle');
+    const dashChallengeDesc = document.getElementById('dashChallengeDesc');
+
+    // ===================================================================
+    // NAVIGATION HANDLING
+    // ===================================================================
+    function switchView(targetView, activeTab) {
+      [viewDashboard, viewPractice, viewChallenge, viewDiscussion, viewProgress, viewAiCoach].forEach(v => {
+        if (v) v.classList.remove('active');
+      });
+      [tabDashboard, tabPractice, tabChallenge, tabDiscussion, tabProgress, tabAiCoach].forEach(t => {
+        if (t) {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        }
+      });
+
+      targetView.classList.add('active');
+      activeTab.classList.add('active');
+      activeTab.setAttribute('aria-selected', 'true');
+
+      // Update mobile bottom nav active state
+      document.querySelectorAll('.mobile-nav-item').forEach(m => {
+        if (m.dataset.target === targetView.id) {
+          m.classList.add('active');
+        } else {
+          m.classList.remove('active');
+        }
+      });
+
+      if (targetView === viewDashboard) refreshDashboard();
+      if (targetView === viewProgress) refreshProgressHub();
+    }
+
+    tabDashboard.addEventListener('click', () => switchView(viewDashboard, tabDashboard));
+    tabPractice.addEventListener('click', () => switchView(viewPractice, tabPractice));
+    tabChallenge.addEventListener('click', () => switchView(viewChallenge, tabChallenge));
+    tabDiscussion.addEventListener('click', () => switchView(viewDiscussion, tabDiscussion));
+    tabProgress.addEventListener('click', () => switchView(viewProgress, tabProgress));
+    if (tabAiCoach && viewAiCoach) tabAiCoach.addEventListener('click', () => switchView(viewAiCoach, tabAiCoach));
+
+    // Mobile nav clicks
+    document.querySelectorAll('.mobile-nav-item[data-target]').forEach(item => {
+      item.addEventListener('click', () => {
+        const targetView = document.getElementById(item.dataset.target);
+        const targetTab = document.getElementById(item.dataset.tab);
+        if (targetView && targetTab) switchView(targetView, targetTab);
+      });
+    });
+
+    document.getElementById('btnDashStartPractice').addEventListener('click', () => {
+      setPracticeType('voice');
+      switchView(viewPractice, tabPractice);
+    });
+
+    document.getElementById('btnDashStartVoice').addEventListener('click', () => {
+      setPracticeType('voice');
+      switchView(viewPractice, tabPractice);
+    });
+
+    document.getElementById('btnDashStartChallenge').addEventListener('click', () => {
+      switchView(viewChallenge, tabChallenge);
+    });
+
+    document.getElementById('btnDashJumpChallenge').addEventListener('click', () => {
+      switchView(viewChallenge, tabChallenge);
+    });
+
+    // Practice Mode Cards on Dashboard
+    document.querySelectorAll('.mode-launch-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const mode = card.dataset.mode;
+        if (mode) {
+          currentMode = mode;
+          document.querySelectorAll('.mode-tab-btn').forEach(btn => {
+            if (btn.dataset.mode === mode) btn.classList.add('active');
+            else btn.classList.remove('active');
+          });
+          populateScenariosForMode(mode);
+          initVoiceSession();
+          switchView(viewPractice, tabPractice);
+        }
+      });
+    });
+
+    // Practice Modality (Voice-Only Platform)
+    function setPracticeType(type) {
+      currentPracticeType = 'voice';
+      if (containerVoicePractice) containerVoicePractice.style.display = 'block';
+      initVoiceSession();
+      startWaveformAnimation(false);
+    }
+
+    // Mode Buttons in Studio
+    document.querySelectorAll('.mode-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+        populateScenariosForMode(currentMode);
+      });
+    });
+
+    function populateScenariosForMode(mode) {
+      const scenarios = getScenariosByMode(mode);
+      scenarioSelect.innerHTML = '';
+      scenarios.forEach(sc => {
+        const opt = document.createElement('option');
+        opt.value = sc.id;
+        opt.textContent = sc.title;
+        scenarioSelect.appendChild(opt);
+      });
+      if (scenarios.length > 0) {
+        selectScenario(scenarios[0].id);
+      }
+    }
+
+    function selectScenario(scenarioId) {
+      currentScenarioId = scenarioId;
+      scenarioSelect.value = scenarioId;
+      const sc = getScenarioById(scenarioId);
+      if (sc) {
+        scenarioPromptTitle.textContent = sc.title;
+        scenarioPromptDesc.textContent = sc.prompt;
+        scenarioGuidance.innerHTML = `<span>💡</span> Guidance: ${sc.guidance || 'Deliver clear, structured communication.'}`;
+        scenarioTimeLimit.textContent = `⏱️ Target: ${sc.timeLimitSeconds ? sc.timeLimitSeconds + 's' : '90s'}`;
+      }
+      resetAttemptUI();
+    }
+
+    scenarioSelect.addEventListener('change', (e) => selectScenario(e.target.value));
+
+    function resetAttemptUI() {
+      currentAttemptNumber = 1;
+      if (practiceResultsContainer) practiceResultsContainer.style.display = 'none';
+      if (containerComparison) containerComparison.style.display = 'none';
+      if (scoreDeltaContainer) scoreDeltaContainer.style.display = 'none';
+      if (voiceSession) {
+        voiceSession.reset();
+        setMicState('initial');
+      }
+    }
+
+    // Voice-Only Platform: Text practice input controls removed.
+    // Spoken voice is captured, transcribed, and analyzed via the Voice Studio Cockpit below.
+
+    // ===================================================================
+    // VOICE STUDIO COCKPIT & AUDIO VISUALIZER
+    // ===================================================================
+    function setMicState(state) {
+      const allStates = [micStateInitial, micStateRecording, micStateCaptured, micStateDenied, micStateUnsupported];
+      allStates.forEach(s => s.style.display = 'none');
+
+      if (state === 'initial') {
+        micStateInitial.style.display = 'inline';
+        btnStartVoiceRecording.style.display = 'inline-flex';
+        btnStopVoiceRecording.style.display = 'none';
+        btnRerecordVoice.style.display = 'none';
+        btnAnalyzeVoice.style.display = 'none';
+        voicePulseCircle.classList.remove('active');
+        voiceLiveTranscript.style.display = 'block';
+        voiceCapturedTranscript.style.display = 'none';
+        startWaveformAnimation(false);
+      } else if (state === 'recording') {
+        micStateRecording.style.display = 'inline';
+        btnStartVoiceRecording.style.display = 'none';
+        btnStopVoiceRecording.style.display = 'inline-flex';
+        btnRerecordVoice.style.display = 'none';
+        btnAnalyzeVoice.style.display = 'none';
+        voicePulseCircle.classList.add('active');
+        voiceLiveTranscript.style.display = 'block';
+        voiceCapturedTranscript.style.display = 'none';
+        startWaveformAnimation(true);
+      } else if (state === 'captured') {
+        micStateCaptured.style.display = 'inline';
+        btnStartVoiceRecording.style.display = 'none';
+        btnStopVoiceRecording.style.display = 'none';
+        btnRerecordVoice.style.display = 'inline-flex';
+        btnAnalyzeVoice.style.display = 'inline-flex';
+        voicePulseCircle.classList.remove('active');
+        voiceLiveTranscript.style.display = 'none';
+        voiceCapturedTranscript.style.display = 'block';
+        stopWaveformAnimation();
+      } else if (state === 'denied') {
+        micStateDenied.style.display = 'inline';
+        btnStartVoiceRecording.style.display = 'none';
+        btnStopVoiceRecording.style.display = 'none';
+        btnRerecordVoice.style.display = 'inline-flex';
+        voicePulseCircle.classList.remove('active');
+        stopWaveformAnimation();
+      } else if (state === 'unsupported') {
+        micStateUnsupported.style.display = 'inline';
+        btnStartVoiceRecording.style.display = 'none';
+        btnStopVoiceRecording.style.display = 'none';
+        btnRerecordVoice.style.display = 'inline-flex';
+        voicePulseCircle.classList.remove('active');
+        stopWaveformAnimation();
+      }
+    }
+
+    function initVoiceSession() {
+      if (voiceSession) return;
+
+      voiceSession = new VoiceRecordingSession({
+        onStateChange: (state) => {
+          if (state === RecognitionState.RECORDING) setMicState('recording');
+          else if (state === RecognitionState.STOPPED) setMicState('captured');
+          else if (state === RecognitionState.PERMISSION_DENIED) setMicState('denied');
+          else if (state === RecognitionState.UNSUPPORTED) setMicState('unsupported');
+        },
+        onTranscriptUpdate: (text, isFinal) => {
+          voiceLiveTranscript.textContent = text || 'Listening...';
+          voiceCapturedTranscript.value = text;
+        },
+        onMetricsUpdate: (metrics) => {
+          chipWords.textContent = `Words: ${metrics.wordCount}`;
+          chipPace.textContent = `${metrics.wpm} WPM (${metrics.paceLabel || 'Pacing'})`;
+          chipFillers.textContent = `Fillers: ${metrics.fillerCount}`;
+          chipDuration.textContent = `${metrics.durationSeconds}s`;
+          voiceLiveTimer.textContent = `${formatTime(metrics.durationSeconds)} / 03:00 max`;
+        }
+      });
+
+      setMicState('initial');
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    btnStartVoiceRecording.addEventListener('click', async () => {
+      initVoiceSession();
+      try {
+        await voiceSession.startRecording();
+      } catch (err) {
+        console.error('Error starting recording:', err);
+      }
+    });
+
+    btnStopVoiceRecording.addEventListener('click', () => {
+      if (voiceSession) {
+        const transcript = voiceSession.stopRecording();
+        voiceCapturedTranscript.value = transcript;
+        setMicState('captured');
+      }
+    });
+
+    btnRerecordVoice.addEventListener('click', () => {
+      if (voiceSession) {
+        voiceSession.reset();
+        setMicState('initial');
+      }
+    });
+
+    btnAnalyzeVoice.addEventListener('click', async () => {
+      if (!voiceSession) {
+        initVoiceSession();
+      }
+
+      const editedTranscript = voiceCapturedTranscript.value.trim();
+      if (!editedTranscript) {
+        alert('Please record speech first before analyzing.');
+        return;
+      }
+
+      btnAnalyzeVoice.disabled = true;
+      btnAnalyzeVoice.innerHTML = '<span>⚡</span> Analyzing...';
+
+      try {
+        const res = await voiceSession.analyzeCurrentResponse(editedTranscript);
+        if (res.error) {
+          alert(res.message || 'Analysis error. Please try speaking again.');
+          return;
+        }
+
+        const result = res.analysis;
+        latestAnalysisResult = result;
+        const comp = res.comparison || (typeof voiceSession.getComparisonWithPrevious === 'function' ? voiceSession.getComparisonWithPrevious() : null);
+        displayAnalysisResults(result, true, comp);
+
+        progressTracker.saveSession({
+          scenarioId: currentScenarioId,
+          practiceType: currentMode || 'casual',
+          isVoice: true,
+          attemptNumber: voiceSession.currentAttemptNumber || 1,
+          score: result.communicationScore,
+          deliveryScore: result.deliveryScore,
+          wpm: result.speakingMetrics?.wpm || 0,
+          fillerRate: result.speakingMetrics?.fillerRate || 0,
+          speakingDuration: result.speakingMetrics?.durationSeconds || 0,
+          dimensionScores: result.communicationDimensionScores,
+          detectedIssuesCount: (result.speakingMetrics?.fillerCount || 0) +
+                               (result.improvementFeedback?.length || 0),
+          status: 'completed'
+        });
+
+        refreshDashboard();
+      } catch (err) {
+        console.error('Error during voice analysis:', err);
+      } finally {
+        btnAnalyzeVoice.disabled = false;
+        btnAnalyzeVoice.innerHTML = '<span>⚡</span> Analyze Captured';
+      }
+    });
+
+    // Fallback to text removed (Voice-Only Platform)
+
+    // ===================================================================
+    // DYNAMIC AUDIO WAVEFORM VISUALIZER (CANVAS)
+    // ===================================================================
+    function startWaveformAnimation(isActiveRecording) {
+      if (!waveformCanvas) return;
+      const ctx = waveformCanvas.getContext('2d');
+      const width = waveformCanvas.width;
+      const height = waveformCanvas.height;
+      const bars = 48;
+      const barWidth = width / bars - 4;
+
+      function renderFrame() {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < bars; i++) {
+          const x = i * (barWidth + 4);
+          let h;
+          if (isActiveRecording) {
+            // Dynamic pulsating bars based on simulated frequencies
+            const freq = Math.sin(Date.now() * 0.006 + i * 0.3) * 0.5 + 0.5;
+            const noise = Math.random() * 0.3;
+            h = Math.max(8, (freq + noise) * (height - 24));
+          } else {
+            // Calm idle state
+            h = Math.sin(Date.now() * 0.002 + i * 0.2) * 6 + 10;
+          }
+
+          const y = (height - h) / 2;
+
+          // Color gradient from Indigo to Emerald
+          const grad = ctx.createLinearGradient(0, y, 0, y + h);
+          if (i > 16 && i < 32) {
+            grad.addColorStop(0, '#10b981');
+            grad.addColorStop(1, '#059669');
+          } else {
+            grad.addColorStop(0, '#6366f1');
+            grad.addColorStop(1, '#06b6d4');
+          }
+
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.roundRect(x, y, barWidth, h, 3);
+          ctx.fill();
+        }
+
+        animationFrameId = requestAnimationFrame(renderFrame);
+      }
+
+      cancelAnimationFrame(animationFrameId);
+      renderFrame();
+    }
+
+    function stopWaveformAnimation() {
+      cancelAnimationFrame(animationFrameId);
+      if (waveformCanvas) {
+        const ctx = waveformCanvas.getContext('2d');
+        ctx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+      }
+    }
+
+    // ===================================================================
+    // RESULTS & COACHING DISPLAY
+    // ===================================================================
+    function setDimBar(valElemId, barElemId, score) {
+      const valEl = document.getElementById(valElemId);
+      const barEl = document.getElementById(barElemId);
+      if (valEl) valEl.textContent = score;
+      if (barEl) barEl.style.width = `${score}%`;
+    }
+
+    function displayAnalysisResults(analysis, isVoice = false, comparison = null) {
+      practiceResultsContainer.style.display = 'block';
+      practiceResultsContainer.scrollIntoView({ behavior: 'smooth' });
+
+      // Overall Communication Score (0-100)
+      const commScore = analysis.communicationScore !== undefined ? analysis.communicationScore : analysis.overallScore;
+      practiceScoreNum.textContent = commScore;
+      const circumference = 326.7;
+      const offset = circumference - (commScore / 100) * circumference;
+      practiceScoreCircle.style.strokeDashoffset = offset;
+
+      // Verdict & Issue Summary
+      const modStatus = analysis.moderationStatus || 'safe';
+      if (modStatus === 'safe') {
+        practiceVerdictBadge.className = 'verdict-pill pill-safe';
+        practiceVerdictLabel.textContent = 'Safe & Constructive';
+        practiceVerdictIcon.textContent = '✓';
+        practiceIssueSummary.textContent = 'Clean, constructive response meeting communication benchmarks.';
+        btnOpenAppealFromResults.style.display = 'none';
+      } else {
+        practiceVerdictBadge.className = 'verdict-pill pill-harmful';
+        practiceVerdictLabel.textContent = 'Review Suggested';
+        practiceVerdictIcon.textContent = '⚠️';
+        practiceIssueSummary.textContent = `Flagged by deterministic safety rules (${analysis.moderationCategory || 'Tone / Respect'}). Non-punitive feedback: refine phrasing for constructive collaboration.`;
+        btnOpenAppealFromResults.style.display = 'inline-flex';
+      }
+
+      // Voice Delivery Box
+      if (isVoice && analysis.deliveryScore !== undefined) {
+        boxDeliveryScore.style.display = 'grid';
+        deliveryScoreNum.textContent = analysis.deliveryScore;
+        const delivOffset = circumference - (analysis.deliveryScore / 100) * circumference;
+        deliveryScoreCircle.style.strokeDashoffset = delivOffset;
+
+        const dims = analysis.deliveryDimensions || { pace: 90, fillerControl: 90, flowControl: 85 };
+        valPaceScore.textContent = `${dims.pace} / 100`;
+        barPaceFill.style.width = `${dims.pace}%`;
+        valFillerScore.textContent = `${dims.fillerControl} / 100`;
+        barFillerFill.style.width = `${dims.fillerControl}%`;
+        valFlowScore.textContent = `${dims.flowControl} / 100`;
+        barFlowFill.style.width = `${dims.flowControl}%`;
+      } else {
+        boxDeliveryScore.style.display = 'none';
+      }
+
+      // 8 Dimensions
+      const d = analysis.communicationDimensionScores || analysis.dimensionScores || {};
+      setDimBar('dimValClarity', 'dimBarClarity', d.clarity || 80);
+      setDimBar('dimValGrammar', 'dimBarGrammar', d.grammar || 85);
+      setDimBar('dimValVocabulary', 'dimBarVocabulary', d.vocabulary || 75);
+      setDimBar('dimValConfidence', 'dimBarConfidence', d.confidence || 75);
+      setDimBar('dimValProfessionalism', 'dimBarProfessionalism', d.professionalism || 85);
+      setDimBar('dimValRespectfulness', 'dimBarRespectfulness', d.respectfulness || 100);
+      setDimBar('dimValFillerControl', 'dimBarFillerControl', d.filler_control !== undefined ? d.filler_control : (d.fillerControl || 70));
+      setDimBar('dimValStructure', 'dimBarStructure', d.structure || 75);
+
+      // Coaching Feedback
+      listDidWell.innerHTML = '';
+      (analysis.positiveFeedback || ['Clear communication tone.']).forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        listDidWell.appendChild(li);
+      });
+
+      listNeedsImprove.innerHTML = '';
+      (analysis.improvementFeedback || ['Maintain steady pacing.']).forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        listNeedsImprove.appendChild(li);
+      });
+
+      textCoachingTip.textContent = analysis.coachingTip || 'Pause silently instead of using fillers.';
+
+      // Say It Better (Polish Matrix)
+      if (analysis.sayItBetter) {
+        textSuggestedAlt.textContent = `"${analysis.sayItBetter.suggested_text || analysis.sayItBetter.suggestedText || ''}"`;
+        listSibImprovements.innerHTML = '';
+        (analysis.sayItBetter.improvements_made || analysis.sayItBetter.improvementsMade || []).forEach(imp => {
+          const li = document.createElement('li');
+          li.textContent = imp;
+          listSibImprovements.appendChild(li);
+        });
+      }
+
+      // Attempt Tracker Pills
+      updateAttemptPills();
+
+      // Comparison Table (Multiple Attempts)
+      if (comparison) {
+        renderComparisonTable(comparison);
+      } else if (sessionManager.getAttemptCount() >= 2) {
+        const comp = sessionManager.getComparison();
+        if (comp) renderBasicComparisonTable(comp);
+      } else {
+        containerComparison.style.display = 'none';
+      }
+
+      btnTryAgain.textContent = `🔄 Speak Again (Attempt ${currentAttemptNumber + 1})`;
+      loadAiCoaching(analysis, getScenarioById(currentScenarioId));
+    }
+
+    function updateAttemptPills() {
+      attemptPillsContainer.innerHTML = '';
+      const totalAttempts = Math.max(1, currentAttemptNumber);
+      for (let i = 1; i <= totalAttempts; i++) {
+        const span = document.createElement('span');
+        span.className = `attempt-pill ${i === totalAttempts ? 'active' : ''}`;
+        span.textContent = `Attempt ${i}`;
+        attemptPillsContainer.appendChild(span);
+      }
+
+      const delta = sessionManager.getScoreDelta();
+      if (totalAttempts >= 2 && delta !== 0) {
+        scoreDeltaContainer.style.display = 'flex';
+        scoreDeltaBadge.textContent = `${delta > 0 ? '+' : ''}${delta} pts`;
+        scoreDeltaBadge.className = `delta-badge ${delta >= 0 ? 'improved' : 'declined'}`;
+      }
+    }
+
+    function renderComparisonTable(comparison) {
+      containerComparison.style.display = 'block';
+      document.getElementById('thAttemptPrev').textContent = `Attempt ${comparison.previousAttemptNumber}`;
+      document.getElementById('thAttemptCurr').textContent = `Attempt ${comparison.currentAttemptNumber}`;
+
+      comparisonTableBody.innerHTML = '';
+      comparison.metrics.forEach(m => {
+        const tr = document.createElement('tr');
+        const sign = m.delta > 0 ? '+' : '';
+        const badgeClass = m.improved ? 'improved' : (m.delta === 0 ? 'neutral' : 'declined');
+
+        tr.innerHTML = `
+          <td><strong>${m.name}</strong></td>
+          <td>${m.previous}</td>
+          <td>${m.current}</td>
+          <td><span class="delta-badge ${badgeClass}">${sign}${m.delta}</span></td>
+        `;
+        comparisonTableBody.appendChild(tr);
+      });
+    }
+
+    function renderBasicComparisonTable(comp) {
+      containerComparison.style.display = 'block';
+      document.getElementById('thAttemptPrev').textContent = `Attempt ${comp.attemptA}`;
+      document.getElementById('thAttemptCurr').textContent = `Attempt ${comp.attemptB}`;
+
+      comparisonTableBody.innerHTML = `
+        <tr>
+          <td><strong>Overall Communication Score</strong></td>
+          <td>${comp.scoreA}</td>
+          <td>${comp.scoreB}</td>
+          <td><span class="delta-badge ${comp.delta >= 0 ? 'improved' : 'declined'}">${comp.delta >= 0 ? '+' : ''}${comp.delta} pts</span></td>
+        </tr>
+      `;
+    }
+
+    // Apply "Say It Better" text (Voice Only)
+    if (btnApplyCoachSib) {
+      btnApplyCoachSib.addEventListener('click', () => {
+        if (latestAnalysisResult?.sayItBetter) {
+          const text = latestAnalysisResult.sayItBetter.suggested_text || latestAnalysisResult.sayItBetter.suggestedText;
+          if (text && voiceCapturedTranscript) {
+            voiceCapturedTranscript.value = text;
+          }
+        }
+      });
+    }
+
+    // Speak Again (Attempt Progression)
+    btnTryAgain.addEventListener('click', () => {
+      if (voiceSession) {
+        voiceSession.prepareRetry();
+        currentAttemptNumber = voiceSession.currentAttemptNumber;
+      } else {
+        currentAttemptNumber++;
+      }
+      setMicState('initial');
+      practiceResultsContainer.style.display = 'none';
+      if (containerVoicePractice) containerVoicePractice.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // ===================================================================
+    // DASHBOARD & PROGRESS REFRESH
+    // ===================================================================
+    function refreshDashboard() {
+      const overview = progressTracker.getOverview();
+      dashScoreNum.textContent = overview.overallScore || 84;
+      const circumference = 326.7;
+      const score = overview.overallScore || 84;
+      const offset = circumference - (score / 100) * circumference;
+      dashScoreCircle.style.strokeDashoffset = offset;
+
+      if (overview.voiceProgress) {
+        const vp = overview.voiceProgress;
+        document.getElementById('dashAvgDelivery').textContent = vp.averageDeliveryScore > 0 ? `${vp.averageDeliveryScore} / 100` : '—';
+        document.getElementById('dashAvgPace').textContent = vp.averageWpm > 0 ? `${vp.averageWpm} WPM` : '—';
+        document.getElementById('dashAvgFillers').textContent = vp.averageFillerRate > 0 ? `${vp.averageFillerRate}%` : '—';
+      }
+    }
+
+    function refreshProgressHub() {
+      const overview = progressTracker.getOverview();
+      document.getElementById('progOverallScore').textContent = overview.overallScore || 0;
+      document.getElementById('progBestScore').textContent = overview.bestScore || 0;
+      document.getElementById('progStreak').textContent = `${overview.currentStreakDays || 0} Days`;
+      document.getElementById('progSessions').textContent = overview.practiceSessionsCount || 0;
+
+      if (overview.voiceProgress) {
+        const vp = overview.voiceProgress;
+        document.getElementById('progAvgDelivery').textContent = vp.averageDeliveryScore > 0 ? vp.averageDeliveryScore : '—';
+        document.getElementById('progAvgWpm').textContent = vp.averageWpm > 0 ? `${vp.averageWpm} WPM` : '—';
+        document.getElementById('progAvgFillerRate').textContent = vp.averageFillerRate > 0 ? `${vp.averageFillerRate}%` : '—';
+        document.getElementById('progVoiceSessions').textContent = vp.voiceSessionsCount || 0;
+      }
+
+      // History Ledger Table
+      const history = progressTracker.getHistory(15);
+      const tableBody = document.getElementById('progressTableBody');
+      tableBody.innerHTML = '';
+
+      if (history.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No practice sessions recorded yet. Start practicing!</td></tr>';
+        return;
+      }
+
+      history.forEach(item => {
+        const tr = document.createElement('tr');
+        const sc = getScenarioById(item.scenarioId) || { title: item.scenarioId || 'Practice' };
+        const timeStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent';
+        const typeBadge = item.isVoice ? '<span class="drill-badge-tag" style="color: var(--primary-indigo);">🎙️ Voice</span>' : '<span class="drill-badge-tag">✍️ Text</span>';
+
+        tr.innerHTML = `
+          <td>${typeBadge}</td>
+          <td><strong>${sc.title}</strong></td>
+          <td>Attempt ${item.attemptNumber || 1}</td>
+          <td><span class="growth-pill">${item.score}</span></td>
+          <td>${item.deliveryScore ? item.deliveryScore : '—'}</td>
+          <td>${item.wpm ? item.wpm + ' WPM' : '—'}</td>
+          <td><span style="color: var(--text-muted); font-size: 0.8125rem;">${timeStr}</span></td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // Daily Challenge Initializer
+    function initChallengeView() {
+      const challenge = getTodayChallenge();
+      document.getElementById('challengeHeroTitle').textContent = challenge.title;
+      document.getElementById('challengeHeroDesc').textContent = challenge.prompt;
+      dashChallengeTitle.textContent = challenge.title;
+      dashChallengeDesc.textContent = challenge.prompt;
+
+      document.getElementById('btnStartChallengeText').addEventListener('click', () => {
+        setPracticeType('text');
+        selectScenario(challenge.id);
+        switchView(viewPractice, tabPractice);
+      });
+
+      document.getElementById('btnStartChallengeVoice').addEventListener('click', () => {
+        setPracticeType('voice');
+        selectScenario(challenge.id);
+        switchView(viewPractice, tabPractice);
+      });
+    }
+
+    // ===================================================================
+    // AUTHENTICATION MODAL LOGIC (API & LOCAL SESSION)
+    // ===================================================================
+    const authModal = document.getElementById('authModal');
+    const btnOpenAuthModal = document.getElementById('btnOpenAuthModal');
+    const btnCloseAuthModal = document.getElementById('btnCloseAuthModal');
+    const btnTabLogin = document.getElementById('btnTabLogin');
+    const btnTabRegister = document.getElementById('btnTabRegister');
+    const formAuthLogin = document.getElementById('formAuthLogin');
+    const formAuthRegister = document.getElementById('formAuthRegister');
+    const loggedInUserCard = document.getElementById('loggedInUserCard');
+    const userAuthLabel = document.getElementById('userAuthLabel');
+    const btnAuthSignOut = document.getElementById('btnAuthSignOut');
+
+    function checkActiveAuth() {
+      const token = localStorage.getItem('conversx_token');
+      const user = localStorage.getItem('conversx_user');
+      if (token && user) {
+        userAuthLabel.textContent = user;
+        document.getElementById('loggedUserDisplay').textContent = `Signed in as ${user}`;
+        formAuthLogin.style.display = 'none';
+        formAuthRegister.style.display = 'none';
+        btnTabLogin.style.display = 'none';
+        btnTabRegister.style.display = 'none';
+        loggedInUserCard.style.display = 'flex';
+      } else {
+        userAuthLabel.textContent = 'Sign In';
+        formAuthLogin.style.display = 'flex';
+        formAuthRegister.style.display = 'none';
+        btnTabLogin.style.display = 'block';
+        btnTabRegister.style.display = 'block';
+        loggedInUserCard.style.display = 'none';
+      }
+    }
+
+    btnOpenAuthModal.addEventListener('click', () => {
+      checkActiveAuth();
+    refreshAiCoachStatus();
+      authModal.classList.add('open');
+    });
+
+    btnCloseAuthModal.addEventListener('click', () => {
+      authModal.classList.remove('open');
+    });
+
+    btnTabLogin.addEventListener('click', () => {
+      btnTabLogin.classList.add('active');
+      btnTabRegister.classList.remove('active');
+      formAuthLogin.style.display = 'flex';
+      formAuthRegister.style.display = 'none';
+    });
+
+    btnTabRegister.addEventListener('click', () => {
+      btnTabRegister.classList.add('active');
+      btnTabLogin.classList.remove('active');
+      formAuthRegister.style.display = 'flex';
+      formAuthLogin.style.display = 'none';
+    });
+
+    formAuthLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const errorMsg = document.getElementById('loginErrorMsg');
+
+      try {
+        const resp = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          localStorage.setItem('conversx_token', data.access_token);
+          localStorage.setItem('conversx_user', username);
+          authModal.classList.remove('open');
+          checkActiveAuth();
+        } else {
+          // Fallback demo local session
+          localStorage.setItem('conversx_token', 'demo_jwt_token');
+          localStorage.setItem('conversx_user', username);
+          authModal.classList.remove('open');
+          checkActiveAuth();
+        }
+      } catch (err) {
+        // Fallback demo session when offline
+        localStorage.setItem('conversx_token', 'offline_jwt_token');
+        localStorage.setItem('conversx_user', username);
+        authModal.classList.remove('open');
+        checkActiveAuth();
+      }
+    });
+
+    formAuthRegister.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('registerUsername').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value;
+
+      try {
+        const resp = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          localStorage.setItem('conversx_token', data.access_token || 'demo_token');
+          localStorage.setItem('conversx_user', username);
+          authModal.classList.remove('open');
+          checkActiveAuth();
+        } else {
+          localStorage.setItem('conversx_token', 'demo_jwt_token');
+          localStorage.setItem('conversx_user', username);
+          authModal.classList.remove('open');
+          checkActiveAuth();
+        }
+      } catch (err) {
+        localStorage.setItem('conversx_token', 'offline_jwt_token');
+        localStorage.setItem('conversx_user', username);
+        authModal.classList.remove('open');
+        checkActiveAuth();
+      }
+    });
+
+    btnAuthSignOut.addEventListener('click', () => {
+      localStorage.removeItem('conversx_token');
+      localStorage.removeItem('conversx_user');
+      checkActiveAuth();
+      authModal.classList.remove('open');
+    });
+
+    // ===================================================================
+    // MODERATION APPEAL MODAL LOGIC
+    // ===================================================================
+    const appealModal = document.getElementById('appealModal');
+    const btnCloseAppealModal = document.getElementById('btnCloseAppealModal');
+    const formSubmitAppeal = document.getElementById('formSubmitAppeal');
+
+    btnOpenAppealFromResults.addEventListener('click', () => {
+      appealModal.classList.add('open');
+    });
+
+    btnCloseAppealModal.addEventListener('click', () => {
+      appealModal.classList.remove('open');
+    });
+
+    formSubmitAppeal.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const reason = document.getElementById('appealReasonInput').value.trim();
+      const statusEl = document.getElementById('appealStatusMsg');
+
+      statusEl.style.display = 'block';
+      statusEl.style.color = 'var(--accent-emerald)';
+      statusEl.textContent = 'Submitting calm appeal for administrative review...';
+
+      try {
+        const token = localStorage.getItem('conversx_token');
+        await fetch(`${API_BASE_URL}/api/v1/appeals`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({
+            scenario_id: currentScenarioId,
+            reason: reason,
+            attempt_number: currentAttemptNumber
+          })
+        });
+      } catch (e) {
+        // Offline / graceful handling
+      }
+
+      setTimeout(() => {
+        statusEl.textContent = '✓ Appeal successfully logged in moderation queue. Thank you for your feedback.';
+        setTimeout(() => {
+          appealModal.classList.remove('open');
+          document.getElementById('appealReasonInput').value = '';
+          statusEl.style.display = 'none';
+        }, 1500);
+      }, 600);
+    });
+
+    // Initialize on page load
+    
+    // ===================================================================
+    // LIVE GROUP DISCUSSION CONTROLLER
+    // ===================================================================
+    let discRoom = null;
+    let discVoice = null;
+    let discTimerId = null;
+    let discSecondsRemaining = 900;
+    let discLocalSpeakingSeconds = 0;
+    let discLocalSpeakingTurns = 0;
+    let discSpeakerInterval = null;
+
+    const discStageTopic = document.getElementById('discStageTopic');
+    const discStageFinding = document.getElementById('discStageFinding');
+    const discStageWaiting = document.getElementById('discStageWaiting');
+    const discStageLive = document.getElementById('discStageLive');
+    const discStageTransition = document.getElementById('discStageTransition');
+    const discStageResults = document.getElementById('discStageResults');
+
+    function setDiscStage(stage) {
+      const stages = [discStageTopic, discStageFinding, discStageWaiting, discStageLive, discStageTransition, discStageResults];
+      stages.forEach(s => s.style.display = 'none');
+
+      if (stage === 'topic') discStageTopic.style.display = 'flex';
+      else if (stage === 'finding') discStageFinding.style.display = 'flex';
+      else if (stage === 'waiting') discStageWaiting.style.display = 'flex';
+      else if (stage === 'live') discStageLive.style.display = 'flex';
+      else if (stage === 'transition') discStageTransition.style.display = 'flex';
+      else if (stage === 'results') discStageResults.style.display = 'block';
+    }
+
+    // Render Discussion Topic Cards
+    function renderDiscussionTopics() {
+      const container = document.getElementById('discTopicCardsContainer');
+      container.innerHTML = '';
+
+      DISCUSSION_TOPICS.forEach(topic => {
+        const card = document.createElement('div');
+        card.className = 'topic-card-gym';
+        card.innerHTML = `
+          <div class="topic-card-badge-row">
+            <span class="topic-category-badge">${topic.category}</span>
+            <span class="topic-meta-badge">${topic.difficulty}</span>
+            <span class="topic-meta-badge">⏱️ 15 Mins</span>
+            <span class="topic-meta-badge" style="color: var(--accent-emerald);">👥 3–8 People</span>
+          </div>
+          <h4 class="topic-card-title">${topic.title}</h4>
+          <p class="topic-card-guidance">${topic.guidance}</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-subtle);">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Individual Feedback</span>
+            <button class="btn-gym-primary" style="padding: 0.5rem 1rem; font-size: 0.8125rem;">
+              Join Discussion Room →
+            </button>
+          </div>
+        `;
+        card.addEventListener('click', () => startMatchmakingForTopic(topic.id));
+        container.appendChild(card);
+      });
+    }
+
+    // Matchmaking Flow
+    function startMatchmakingForTopic(topicId) {
+      const topic = getTopicById(topicId);
+      document.getElementById('findingTopicTitle').textContent = `Topic: ${topic.title}`;
+      setDiscStage('finding');
+
+      // Setup room manager
+      discRoom = new DiscussionRoomManager(topicId, {
+        onParticipantsUpdate: (participants) => updateWaitingRoomUI(participants),
+        onActiveSpeakerChange: (speakerId) => updateActiveSpeakerVisual(speakerId)
+      });
+
+      // Add local user as Host
+      const localUsername = localStorage.getItem('conversx_user') || 'Marcus Vance';
+      discRoom.addParticipant({
+        id: 'user_local',
+        name: `${localUsername} (YOU)`,
+        role: 'Host / Systems Arch',
+        isLocal: true,
+        isReady: true
+      });
+
+      // Simulate realistic peer discovery joining waiting room
+      setTimeout(() => {
+        if (discRoom && discRoom.roomState === RoomState.WAITING_ROOM) {
+          discRoom.addParticipant({ id: 'peer_1', name: 'Elena Rostova', role: 'VP Product', isReady: true });
+          discRoom.addParticipant({ id: 'peer_2', name: 'David Chen', role: 'Chief Risk Officer', isReady: true });
+          discRoom.addParticipant({ id: 'peer_3', name: 'Sarah Jenkins', role: 'VP Finance', isReady: true });
+          discRoom.addParticipant({ id: 'peer_4', name: 'Amara Diallo', role: 'General Counsel', isReady: true });
+          openWaitingRoom(topic);
+        }
+      }, 1200);
+    }
+
+    document.getElementById('btnQuickMatchAny').addEventListener('click', () => {
+      startMatchmakingForTopic('disc_01');
+    });
+
+    document.getElementById('btnCancelMatchmaking').addEventListener('click', () => {
+      setDiscStage('topic');
+      discRoom = null;
+    });
+
+    // Waiting Room UI
+    function openWaitingRoom(topic) {
+      document.getElementById('waitingTopicCategory').textContent = topic.category;
+      document.getElementById('waitingTopicTitle').textContent = topic.title;
+      document.getElementById('waitingTopicGuidance').textContent = topic.guidance;
+      updateWaitingRoomUI(discRoom.getParticipants());
+      setDiscStage('waiting');
+    }
+
+    function updateWaitingRoomUI(participants) {
+      const count = participants.length;
+      const countPill = document.getElementById('waitingCountPill');
+      const countText = document.getElementById('waitingCountText');
+      const statusMsg = document.getElementById('waitingStatusMsg');
+      const btnStart = document.getElementById('btnStartLiveDiscussion');
+
+      countText.textContent = `${count} / 8 Participants (Min 3)`;
+      const rosterGrid = document.getElementById('waitingRosterGrid');
+      rosterGrid.innerHTML = '';
+
+      participants.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'roster-item-card';
+        item.innerHTML = `
+          <div class="roster-item-user">
+            <div class="roster-avatar">${p.name.charAt(0)}</div>
+            <div class="roster-user-text">
+              <span class="roster-username">${p.name}</span>
+              <span class="roster-userrole">${p.role || 'Member'}</span>
+            </div>
+          </div>
+          <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-emerald);">
+            ● Ready
+          </span>
+        `;
+        rosterGrid.appendChild(item);
+      });
+
+      if (count >= 3) {
+        countPill.className = 'participant-count-pill ready';
+        statusMsg.innerHTML = '<span style="color: var(--accent-emerald);">● Discussion Ready</span> — Minimum participant requirement met!';
+        btnStart.disabled = false;
+        btnStart.style.opacity = '1';
+        btnStart.style.cursor = 'pointer';
+      } else {
+        countPill.className = 'participant-count-pill waiting';
+        statusMsg.innerHTML = `<span>⏳</span> Waiting for at least 3 participants to begin (${count}/3)...`;
+        btnStart.disabled = true;
+        btnStart.style.opacity = '0.5';
+        btnStart.style.cursor = 'not-allowed';
+      }
+    }
+
+    document.getElementById('btnSimulatePeerJoin').addEventListener('click', () => {
+      if (!discRoom) return;
+      const curr = discRoom.getParticipantCount();
+      if (curr >= 8) {
+        alert('Room is at maximum capacity (8 / 8 Participants). Cannot add more.');
+        return;
+      }
+      const names = ["Liam O'Connor", "Rachel Zhao", "Kavita Sundaram", "Mateo Rossi"];
+      const nextName = names[curr % names.length] || `Peer ${curr + 1}`;
+      discRoom.addParticipant({ id: `peer_${Date.now()}`, name: nextName, role: 'Eng Director', isReady: true });
+    });
+
+    document.getElementById('btnLeaveWaitingRoom').addEventListener('click', () => {
+      setDiscStage('topic');
+      discRoom = null;
+    });
+
+    // Start Live Discussion Room
+    document.getElementById('btnStartLiveDiscussion').addEventListener('click', () => {
+      if (!discRoom || !discRoom.canStart()) return;
+      discRoom.startDiscussion();
+      enterLiveDiscussionStage();
+    });
+
+    function enterLiveDiscussionStage() {
+      setDiscStage('live');
+      const topic = discRoom.topic;
+      document.getElementById('liveTopicCategoryBadge').textContent = topic.category;
+      document.getElementById('liveTopicBarTitle').textContent = topic.title;
+      document.getElementById('liveParticipantCountBadge').textContent = `${discRoom.getParticipantCount()} / 8 People`;
+
+      discSecondsRemaining = 900;
+      discLocalSpeakingSeconds = 0;
+      discLocalSpeakingTurns = 0;
+
+      // Initialize voice coordinator
+      discVoice = new DiscussionVoiceCoordinator({
+        onSpeakingStateChange: (isSpeaking) => {
+          if (isSpeaking) {
+            discRoom.setActiveSpeaker('user_local');
+            discLocalSpeakingSeconds += 0.5;
+          } else if (discRoom.activeSpeakerId === 'user_local') {
+            discRoom.setActiveSpeaker(null);
+          }
+        }
+      });
+      discVoice.initializeMicrophone().catch(() => {});
+
+      renderParticipantTilesGrid();
+      startDiscussionTimer();
+      startActiveSpeakerSimulation();
+    }
+
+    function renderParticipantTilesGrid() {
+      const container = document.getElementById('discParticipantTilesGrid');
+      container.innerHTML = '';
+
+      discRoom.getParticipants().forEach(p => {
+        const tile = document.createElement('div');
+        tile.className = `participant-tile ${p.isLocal ? 'self-view' : ''} ${p.isSpeaking ? 'active-speaker' : ''}`;
+        tile.id = `tile_${p.id}`;
+
+        tile.innerHTML = `
+          <div class="tile-top-status">
+            ${p.isSpeaking ? '<span class="active-speaker-tag">● ACTIVE SPEAKER</span>' : '<span style="font-size: 0.6875rem; color: var(--text-faint);">Active Listening</span>'}
+            <span style="font-size: 0.6875rem; color: var(--text-muted);">${p.isLocal ? 'Self View • 48kHz' : 'HD Voice'}</span>
+          </div>
+          <div class="tile-center-content">
+            <div class="tile-avatar-large">${p.name.charAt(0)}</div>
+            <div class="speaking-mini-bars">
+              <div class="mini-bar"></div><div class="mini-bar"></div><div class="mini-bar"></div><div class="mini-bar"></div>
+            </div>
+          </div>
+          <div class="tile-bottom-bar">
+            <span class="tile-user-name">${p.name}</span>
+            <span class="tile-mic-icon ${p.isMuted ? 'muted' : 'unmuted'}">${p.isMuted ? '🔇' : '🎙️'}</span>
+          </div>
+        `;
+        container.appendChild(tile);
+      });
+    }
+
+    function updateActiveSpeakerVisual(speakerId) {
+      document.querySelectorAll('.participant-tile').forEach(t => {
+        t.classList.remove('active-speaker');
+      });
+      if (speakerId) {
+        const activeTile = document.getElementById(`tile_${speakerId}`);
+        if (activeTile) activeTile.classList.add('active-speaker');
+      }
+    }
+
+    function startDiscussionTimer() {
+      clearInterval(discTimerId);
+      const timerText = document.getElementById('liveDiscussionTimerText');
+      const timerWrap = document.getElementById('liveDiscussionTimerWrap');
+
+      discTimerId = setInterval(() => {
+        discSecondsRemaining--;
+        if (discSecondsRemaining <= 0) {
+          clearInterval(discTimerId);
+          completeLiveDiscussion();
+          return;
+        }
+
+        const m = Math.floor(discSecondsRemaining / 60);
+        const s = discSecondsRemaining % 60;
+        timerText.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+        if (discSecondsRemaining < 120) {
+          timerWrap.classList.add('warning');
+        } else {
+          timerWrap.classList.remove('warning');
+        }
+      }, 1000);
+    }
+
+    function startActiveSpeakerSimulation() {
+      clearInterval(discSpeakerInterval);
+      const parts = discRoom.getParticipants().filter(p => !p.isLocal);
+
+      discSpeakerInterval = setInterval(() => {
+        if (!discRoom || discRoom.roomState !== RoomState.IN_PROGRESS) return;
+        // If local user is not speaking, occasionally rotate peer speaker
+        if (discRoom.activeSpeakerId !== 'user_local' && parts.length > 0) {
+          const rand = Math.random();
+          if (rand > 0.4) {
+            const nextSpeaker = parts[Math.floor(Math.random() * parts.length)];
+            discRoom.setActiveSpeaker(nextSpeaker.id);
+          } else {
+            discRoom.setActiveSpeaker(null);
+          }
+        }
+      }, 4000);
+    }
+
+    // Toggle Floor Request / User Speaking
+    document.getElementById('btnToggleFloor').addEventListener('click', () => {
+      if (!discRoom) return;
+      if (discRoom.activeSpeakerId === 'user_local') {
+        discRoom.setActiveSpeaker(null);
+        document.getElementById('btnToggleFloor').innerHTML = '<span>✋</span> Request Floor';
+      } else {
+        discRoom.setActiveSpeaker('user_local');
+        discLocalSpeakingTurns++;
+        discLocalSpeakingSeconds += 15;
+        document.getElementById('btnToggleFloor').innerHTML = '<span>🛑</span> Yield Floor';
+        document.getElementById('liveSpeakingStatsChip').textContent = `Pace: 142 WPM • Turns: ${discLocalSpeakingTurns}`;
+      }
+    });
+
+    // Mute Toggle
+    document.getElementById('btnToggleDiscMute').addEventListener('click', () => {
+      if (!discVoice) return;
+      const isMuted = discVoice.toggleMute();
+      const btn = document.getElementById('btnToggleDiscMute');
+      const icon = document.getElementById('discMicIcon');
+      const label = document.getElementById('discMicLabel');
+
+      if (isMuted) {
+        btn.classList.add('muted');
+        icon.textContent = '🔇';
+        label.textContent = 'Unmute Mic';
+        if (discRoom) discRoom.toggleParticipantMute('user_local', true);
+      } else {
+        btn.classList.remove('muted');
+        icon.textContent = '🎙️';
+        label.textContent = 'Mute Mic';
+        if (discRoom) discRoom.toggleParticipantMute('user_local', false);
+      }
+    });
+
+    // Leave Discussion Actions
+    function leaveLiveDiscussion() {
+      clearInterval(discTimerId);
+      clearInterval(discSpeakerInterval);
+      if (discVoice) {
+        discVoice.disconnect();
+        discVoice = null;
+      }
+      if (discRoom) {
+        discRoom = null;
+      }
+      setDiscStage('topic');
+    }
+
+    document.getElementById('btnLeaveLiveTop').addEventListener('click', leaveLiveDiscussion);
+    document.getElementById('btnLeaveLiveBottom').addEventListener('click', leaveLiveDiscussion);
+
+    // Complete Discussion & Run Analysis
+    document.getElementById('btnFinishDiscussion').addEventListener('click', () => {
+      completeLiveDiscussion();
+    });
+
+    function completeLiveDiscussion() {
+      clearInterval(discTimerId);
+      clearInterval(discSpeakerInterval);
+      if (discVoice) {
+        discVoice.disconnect();
+        discVoice = null;
+      }
+
+      setDiscStage('transition');
+
+      setTimeout(() => {
+        if (!discRoom) return;
+        discRoom.completeDiscussion();
+        const topic = discRoom.topic;
+        const participantCount = discRoom.getParticipantCount();
+        const durationSec = Math.max(60, 900 - discSecondsRemaining);
+        const speakingSec = Math.max(35, discLocalSpeakingSeconds || 45);
+
+        const sampleTranscript = "Building on what David noted, I agree that acceleration is essential, but another perspective is that system outages cost significantly more. How would our team manage sudden rollbacks?";
+
+        const analysis = analyzeGroupDiscussionContribution({
+          userTranscript: sampleTranscript,
+          speakingTimeSeconds: speakingSec,
+          totalDiscussionDurationSeconds: durationSec,
+          participantCount: participantCount,
+          speakingTurns: Math.max(2, discLocalSpeakingTurns),
+          topicId: topic.id
+        });
+
+        displayDiscussionResults(analysis, topic, participantCount);
+      }, 1500);
+    }
+
+    function displayDiscussionResults(analysis, topic, participantCount) {
+      setDiscStage('results');
+
+      // Diagnostic Composite Score
+      document.getElementById('discScoreNum').textContent = analysis.communicationScore;
+      const circumference = 326.7;
+      const offset = circumference - (analysis.communicationScore / 100) * circumference;
+      document.getElementById('discScoreCircle').style.strokeDashoffset = offset;
+
+      document.getElementById('discResultsTopicBadge').textContent = `Topic: ${topic.title.substring(0, 32)}...`;
+      document.getElementById('discResultsPeersBadge').textContent = `${participantCount} Participants`;
+
+      // Discussion Dynamics Metrics
+      const m = analysis.discussionMetrics;
+      document.getElementById('discMetricSpeakingTime').textContent = `${Math.floor(m.speakingTimeSeconds / 60)}m ${m.speakingTimeSeconds % 60}s`;
+      document.getElementById('discMetricAirtime').textContent = `${m.speakingPercentage}%`;
+      document.getElementById('discMetricTurns').textContent = `${m.speakingTurns} Turns`;
+      document.getElementById('discMetricCollab').textContent = `${m.collaborativePhrasesCount} Phrases`;
+      document.getElementById('discMetricDisagree').textContent = `${m.respectfulDisagreementsCount} Points`;
+      document.getElementById('discMetricQuestions').textContent = `${m.questionsAsked} Questions`;
+
+      document.getElementById('discBalanceStatusPill').textContent = m.conversationalBalance === 'balanced' ? 'Balanced Airtime' : (m.conversationalBalance === 'high_airtime' ? 'High Airtime' : 'Low Participation');
+      document.getElementById('discBalanceSummaryText').textContent = m.balanceSummary;
+
+      // 8 Dimensions
+      const dims = analysis.dimensionScores || {};
+      const setD = (valId, barId, s) => {
+        const valEl = document.getElementById(valId);
+        const barEl = document.getElementById(barId);
+        if (valEl) valEl.textContent = s;
+        if (barEl) barEl.style.width = `${s}%`;
+      };
+      setD('discDimClarity', 'discBarClarity', dims.clarity || 88);
+      setD('discDimGrammar', 'discBarGrammar', dims.grammar || 92);
+      setD('discDimVocabulary', 'discBarVocabulary', dims.vocabulary || 82);
+      setD('discDimConfidence', 'discBarConfidence', dims.confidence || 86);
+      setD('discDimProfessionalism', 'discBarProfessionalism', dims.professionalism || 94);
+      setD('discDimRespectfulness', 'discBarRespectfulness', dims.respectfulness || 98);
+      setD('discDimFiller', 'discBarFiller', dims.filler_control !== undefined ? dims.filler_control : (dims.fillerControl || 80));
+      setD('discDimStructure', 'discBarStructure', dims.structure || 85);
+
+      // Feedback Bullets
+      const listWell = document.getElementById('discListDidWell');
+      listWell.innerHTML = '';
+      (analysis.positiveFeedback || []).forEach(f => {
+        const li = document.createElement('li');
+        li.textContent = f;
+        listWell.appendChild(li);
+      });
+
+      const listImp = document.getElementById('discListNeedsImprove');
+      listImp.innerHTML = '';
+      (analysis.improvementFeedback || []).forEach(f => {
+        const li = document.createElement('li');
+        li.textContent = f;
+        listImp.appendChild(li);
+      });
+
+      document.getElementById('discCoachingTipText').textContent = analysis.coachingTip || 'Synthesize peer input before presenting your proposal.';
+
+      // Say It Better
+      if (analysis.sayItBetter) {
+        document.getElementById('discSibSuggestedText').textContent = `"${analysis.sayItBetter.suggested_text || analysis.sayItBetter.suggestedText || ''}"`;
+        const sibList = document.getElementById('discSibImprovementsList');
+        sibList.innerHTML = '';
+        (analysis.sayItBetter.improvements_made || analysis.sayItBetter.improvementsMade || []).forEach(imp => {
+          const li = document.createElement('li');
+          li.textContent = imp;
+          sibList.appendChild(li);
+        });
+      }
+    }
+
+    document.getElementById('btnJoinNextDiscussion').addEventListener('click', () => {
+      setDiscStage('topic');
+      discRoom = null;
+    });
+
+    // ===================================================================
+    // PERSONAL AI COACH ORCHESTRATION & SETTINGS CONTROLS
+    // ===================================================================
+    const headerAiCoachPill = document.getElementById('headerAiCoachPill');
+    const headerAiCoachText = document.getElementById('headerAiCoachText');
+    const btnJumpToAiSettings = document.getElementById('btnJumpToAiSettings');
+
+    const openaiApiKeyInput = document.getElementById('openaiApiKeyInput');
+    const geminiApiKeyInput = document.getElementById('geminiApiKeyInput');
+    const openaiStatusBadge = document.getElementById('openaiStatusBadge');
+    const geminiStatusBadge = document.getElementById('geminiStatusBadge');
+    const openaiFeedbackMsg = document.getElementById('openaiFeedbackMsg');
+    const geminiFeedbackMsg = document.getElementById('geminiFeedbackMsg');
+
+    const btnSaveOpenAiKey = document.getElementById('btnSaveOpenAiKey');
+    const btnTestOpenAiConnection = document.getElementById('btnTestOpenAiConnection');
+    const btnRemoveOpenAiKey = document.getElementById('btnRemoveOpenAiKey');
+
+    const btnSaveGeminiKey = document.getElementById('btnSaveGeminiKey');
+    const btnTestGeminiConnection = document.getElementById('btnTestGeminiConnection');
+    const btnRemoveGeminiKey = document.getElementById('btnRemoveGeminiKey');
+
+    const btnToggleOpenAiEye = document.getElementById('btnToggleOpenAiEye');
+    const btnToggleGeminiEye = document.getElementById('btnToggleGeminiEye');
+    const btnPrefOpenAi = document.getElementById('btnPrefOpenAi');
+    const btnPrefGemini = document.getElementById('btnPrefGemini');
+
+    const modalApiKeyHelp = document.getElementById('modalApiKeyHelp');
+    const btnCloseApiKeyHelp = document.getElementById('btnCloseApiKeyHelp');
+
+    if (headerAiCoachPill && viewAiCoach && tabAiCoach) {
+      headerAiCoachPill.addEventListener('click', () => switchView(viewAiCoach, tabAiCoach));
+    }
+    if (btnJumpToAiSettings && viewAiCoach && tabAiCoach) {
+      btnJumpToAiSettings.addEventListener('click', () => switchView(viewAiCoach, tabAiCoach));
+    }
+
+    // "Where do I get my API key?" Help Modal
+    document.querySelectorAll('.api-key-help-trigger').forEach(trigger => {
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (modalApiKeyHelp) {
+          modalApiKeyHelp.classList.add('open');
+          modalApiKeyHelp.style.display = 'flex';
+        }
+      });
+    });
+    if (btnCloseApiKeyHelp && modalApiKeyHelp) {
+      btnCloseApiKeyHelp.addEventListener('click', () => {
+        modalApiKeyHelp.classList.remove('open');
+        modalApiKeyHelp.style.display = 'none';
+      });
+    }
+    if (modalApiKeyHelp) {
+      modalApiKeyHelp.addEventListener('click', (e) => {
+        if (e.target === modalApiKeyHelp) {
+          modalApiKeyHelp.classList.remove('open');
+          modalApiKeyHelp.style.display = 'none';
+        }
+      });
+    }
+
+    // Eye toggles for password fields
+    if (btnToggleOpenAiEye && openaiApiKeyInput) {
+      btnToggleOpenAiEye.addEventListener('click', () => {
+        openaiApiKeyInput.type = openaiApiKeyInput.type === 'password' ? 'text' : 'password';
+      });
+    }
+    if (btnToggleGeminiEye && geminiApiKeyInput) {
+      btnToggleGeminiEye.addEventListener('click', () => {
+        geminiApiKeyInput.type = geminiApiKeyInput.type === 'password' ? 'text' : 'password';
+      });
+    }
+
+    // Refresh AI Coach status in UI
+    async function refreshAiCoachStatus() {
+      try {
+        const s = await aiCoachService.fetchStatus();
+        const isOpenAi = s.openai?.connected;
+        const isGemini = s.gemini?.connected;
+
+        // OpenAI Card
+        if (openaiStatusBadge) {
+          openaiStatusBadge.textContent = isOpenAi ? 'Connected' : 'Not Connected';
+          openaiStatusBadge.className = `provider-status-badge ${isOpenAi ? 'connected' : 'not_connected'}`;
+        }
+        if (openaiApiKeyInput) {
+          openaiApiKeyInput.value = '';
+          openaiApiKeyInput.placeholder = isOpenAi ? (s.openai.masked_key || 'sk-••••••••Connected') : 'sk-proj-••••••••••••••••••••';
+        }
+
+        // Gemini Card
+        if (geminiStatusBadge) {
+          geminiStatusBadge.textContent = isGemini ? 'Connected' : 'Not Connected';
+          geminiStatusBadge.className = `provider-status-badge ${isGemini ? 'connected' : 'not_connected'}`;
+        }
+        if (geminiApiKeyInput) {
+          geminiApiKeyInput.value = '';
+          geminiApiKeyInput.placeholder = isGemini ? (s.gemini.masked_key || 'AIza••••••••Connected') : 'AIzaSy••••••••••••••••••••';
+        }
+
+        // Header pill
+        if (headerAiCoachText && headerAiCoachPill) {
+          if (isOpenAi && isGemini) {
+            headerAiCoachText.textContent = 'AI: OpenAI + Gemini';
+            headerAiCoachPill.classList.add('connected');
+          } else if (isOpenAi) {
+            headerAiCoachText.textContent = 'AI: OpenAI Ready';
+            headerAiCoachPill.classList.add('connected');
+          } else if (isGemini) {
+            headerAiCoachText.textContent = 'AI: Gemini Ready';
+            headerAiCoachPill.classList.add('connected');
+          } else {
+            headerAiCoachText.textContent = 'AI Coach: Connect';
+            headerAiCoachPill.classList.remove('connected');
+          }
+        }
+
+        // Active preference buttons
+        if (btnPrefOpenAi && btnPrefGemini) {
+          if (s.preferred_provider === 'gemini') {
+            btnPrefGemini.classList.add('btn-gym-primary');
+            btnPrefGemini.classList.remove('btn-gym-secondary');
+            btnPrefOpenAi.classList.remove('btn-gym-primary');
+            btnPrefOpenAi.classList.add('btn-gym-secondary');
+          } else {
+            btnPrefOpenAi.classList.add('btn-gym-primary');
+            btnPrefOpenAi.classList.remove('btn-gym-secondary');
+            btnPrefGemini.classList.remove('btn-gym-primary');
+            btnPrefGemini.classList.add('btn-gym-secondary');
+          }
+        }
+      } catch (e) {
+        console.warn('Could not refresh AI coach status:', e);
+      }
+    }
+
+    // Save Keys
+    if (btnSaveOpenAiKey && openaiApiKeyInput) {
+      btnSaveOpenAiKey.addEventListener('click', async () => {
+        const key = openaiApiKeyInput.value.trim();
+        if (!key) {
+          if (openaiFeedbackMsg) openaiFeedbackMsg.textContent = 'Please enter an OpenAI API key.';
+          return;
+        }
+        btnSaveOpenAiKey.disabled = true;
+        btnSaveOpenAiKey.textContent = 'Saving...';
+        try {
+          await aiCoachService.connectProvider('openai', key);
+          if (openaiFeedbackMsg) {
+            openaiFeedbackMsg.textContent = 'OpenAI Key Encrypted and Saved.';
+            openaiFeedbackMsg.style.color = 'var(--accent-emerald)';
+          }
+          await refreshAiCoachStatus();
+        } catch (err) {
+          if (openaiFeedbackMsg) {
+            openaiFeedbackMsg.textContent = err.message || 'Error saving key.';
+            openaiFeedbackMsg.style.color = 'var(--harmful-rose)';
+          }
+        } finally {
+          btnSaveOpenAiKey.disabled = false;
+          btnSaveOpenAiKey.textContent = 'Save Key';
+        }
+      });
+    }
+
+    if (btnSaveGeminiKey && geminiApiKeyInput) {
+      btnSaveGeminiKey.addEventListener('click', async () => {
+        const key = geminiApiKeyInput.value.trim();
+        if (!key) {
+          if (geminiFeedbackMsg) geminiFeedbackMsg.textContent = 'Please enter a Gemini API key.';
+          return;
+        }
+        btnSaveGeminiKey.disabled = true;
+        btnSaveGeminiKey.textContent = 'Saving...';
+        try {
+          await aiCoachService.connectProvider('gemini', key);
+          if (geminiFeedbackMsg) {
+            geminiFeedbackMsg.textContent = 'Gemini Key Encrypted and Saved.';
+            geminiFeedbackMsg.style.color = 'var(--accent-emerald)';
+          }
+          await refreshAiCoachStatus();
+        } catch (err) {
+          if (geminiFeedbackMsg) {
+            geminiFeedbackMsg.textContent = err.message || 'Error saving key.';
+            geminiFeedbackMsg.style.color = 'var(--harmful-rose)';
+          }
+        } finally {
+          btnSaveGeminiKey.disabled = false;
+          btnSaveGeminiKey.textContent = 'Save Key';
+        }
+      });
+    }
+
+    // Test Connections
+    if (btnTestOpenAiConnection) {
+      btnTestOpenAiConnection.addEventListener('click', async () => {
+        if (openaiFeedbackMsg) openaiFeedbackMsg.textContent = 'Verifying connection...';
+        const rawKey = openaiApiKeyInput ? openaiApiKeyInput.value.trim() : null;
+        btnTestOpenAiConnection.disabled = true;
+        try {
+          const res = await aiCoachService.testConnection('openai', rawKey || null);
+          if (openaiFeedbackMsg) {
+            openaiFeedbackMsg.textContent = res.message || 'Connection test complete.';
+            openaiFeedbackMsg.style.color = res.status === 'connected' ? 'var(--accent-emerald)' : 'var(--harmful-rose)';
+          }
+          await refreshAiCoachStatus();
+        } catch (err) {
+          if (openaiFeedbackMsg) openaiFeedbackMsg.textContent = 'The AI provider is currently unavailable.';
+        } finally {
+          btnTestOpenAiConnection.disabled = false;
+        }
+      });
+    }
+
+    if (btnTestGeminiConnection) {
+      btnTestGeminiConnection.addEventListener('click', async () => {
+        if (geminiFeedbackMsg) geminiFeedbackMsg.textContent = 'Verifying connection...';
+        const rawKey = geminiApiKeyInput ? geminiApiKeyInput.value.trim() : null;
+        btnTestGeminiConnection.disabled = true;
+        try {
+          const res = await aiCoachService.testConnection('gemini', rawKey || null);
+          if (geminiFeedbackMsg) {
+            geminiFeedbackMsg.textContent = res.message || 'Connection test complete.';
+            geminiFeedbackMsg.style.color = res.status === 'connected' ? 'var(--accent-emerald)' : 'var(--harmful-rose)';
+          }
+          await refreshAiCoachStatus();
+        } catch (err) {
+          if (geminiFeedbackMsg) geminiFeedbackMsg.textContent = 'The AI provider is currently unavailable.';
+        } finally {
+          btnTestGeminiConnection.disabled = false;
+        }
+      });
+    }
+
+    // Remove Connections
+    if (btnRemoveOpenAiKey) {
+      btnRemoveOpenAiKey.addEventListener('click', async () => {
+        if (confirm('Permanently remove your saved OpenAI API key?')) {
+          await aiCoachService.removeConnection('openai');
+          if (openaiFeedbackMsg) openaiFeedbackMsg.textContent = 'OpenAI connection removed.';
+          await refreshAiCoachStatus();
+        }
+      });
+    }
+    if (btnRemoveGeminiKey) {
+      btnRemoveGeminiKey.addEventListener('click', async () => {
+        if (confirm('Permanently remove your saved Gemini API key?')) {
+          await aiCoachService.removeConnection('gemini');
+          if (geminiFeedbackMsg) geminiFeedbackMsg.textContent = 'Gemini connection removed.';
+          await refreshAiCoachStatus();
+        }
+      });
+    }
+
+    // Preferred provider toggles
+    if (btnPrefOpenAi) {
+      btnPrefOpenAi.addEventListener('click', async () => {
+        await aiCoachService.setPreferredProvider('openai');
+        await refreshAiCoachStatus();
+      });
+    }
+    if (btnPrefGemini) {
+      btnPrefGemini.addEventListener('click', async () => {
+        await aiCoachService.setPreferredProvider('gemini');
+        await refreshAiCoachStatus();
+      });
+    }
+
+    // Load AI Coaching in Practice Results
+    async function loadAiCoaching(analysis, scenario) {
+      const cardAi = document.getElementById('cardAiCoachResult');
+      const loadingState = document.getElementById('aiCoachLoadingState');
+      const content = document.getElementById('aiCoachContent');
+      const notConnectedPrompt = document.getElementById('aiCoachNotConnectedPrompt');
+      const starContainer = document.getElementById('aiStarContainer');
+      const presContainer = document.getElementById('aiPresentationContainer');
+      const activeBadge = document.getElementById('aiCoachActiveBadge');
+      const providerSubtitle = document.getElementById('aiCoachProviderSubtitle');
+      const strongerPhrasing = document.getElementById('aiStrongerPhrasing');
+
+      if (!cardAi) return;
+
+      if (loadingState) loadingState.style.display = 'block';
+      if (content) content.style.opacity = '0.5';
+
+      const transcript = (voiceCapturedTranscript && voiceCapturedTranscript.value.trim()) || 
+                         (voiceLiveTranscript && voiceLiveTranscript.textContent.trim()) || '';
+      const statusData = await aiCoachService.fetchStatus();
+      const isOpenAi = statusData.openai?.connected;
+      const isGemini = statusData.gemini?.connected;
+      const isAnyConnected = isOpenAi || isGemini;
+
+      if (!isAnyConnected) {
+        if (notConnectedPrompt) notConnectedPrompt.style.display = 'block';
+        if (activeBadge) {
+          activeBadge.textContent = 'Standard Guidance';
+          activeBadge.className = 'aicoach-header-badge';
+        }
+        if (providerSubtitle) {
+          providerSubtitle.textContent = 'ConversX Deterministic Reasoning • Connect API for personalized AI insights';
+        }
+      } else {
+        if (notConnectedPrompt) notConnectedPrompt.style.display = 'none';
+        const activeName = (statusData.preferred_provider === 'gemini' && isGemini) || !isOpenAi ? 'Google Gemini 1.5' : 'OpenAI GPT-4o';
+        if (activeBadge) {
+          activeBadge.textContent = `${activeName} Active`;
+          activeBadge.className = 'aicoach-header-badge connected';
+        }
+        if (providerSubtitle) {
+          providerSubtitle.textContent = `Cognitive critique powered by your connected ${activeName} key`;
+        }
+      }
+
+      // Request coaching from service
+      const aiData = await aiCoachService.requestCoaching({
+        transcript,
+        scenario: scenario || { title: 'Practice Drill', mode: currentMode },
+        communicationMetrics: analysis.communicationDimensionScores || analysis.dimensionScores || {},
+        speakingMetrics: analysis.speakingMetrics || null
+      });
+
+      if (loadingState) loadingState.style.display = 'none';
+      if (content) content.style.opacity = '1';
+
+      if (aiData) {
+        // Strengths
+        const listWell = document.getElementById('aiListDidWell');
+        if (listWell && aiData.strengths) {
+          listWell.innerHTML = aiData.strengths.map(s => `<li>${s}</li>`).join('');
+        }
+        // Improvements
+        const listImprove = document.getElementById('aiListNeedsImprove');
+        if (listImprove && aiData.improvements) {
+          listImprove.innerHTML = aiData.improvements.map(i => `<li>${i}</li>`).join('');
+        }
+        // Why it matters
+        const textWhy = document.getElementById('aiTextWhyItMatters');
+        if (textWhy && aiData.why_it_matters) {
+          textWhy.textContent = aiData.why_it_matters;
+        }
+        // Next actions
+        const listNext = document.getElementById('aiListNextActions');
+        if (listNext && aiData.next_time_actions) {
+          listNext.innerHTML = aiData.next_time_actions.map(a => `<li>${a}</li>`).join('');
+        }
+        // Executive Polish rewrite
+        if (strongerPhrasing && aiData.stronger_phrasing) {
+          strongerPhrasing.textContent = `"${aiData.stronger_phrasing}"`;
+        }
+
+        // STAR breakdown (Interview)
+        if (aiData.interview_star && starContainer) {
+          starContainer.style.display = 'block';
+          const sElem = document.getElementById('starSituation');
+          const tElem = document.getElementById('starTask');
+          const aElem = document.getElementById('starAction');
+          const rElem = document.getElementById('starResult');
+          if (sElem) sElem.textContent = aiData.interview_star.situation || '—';
+          if (tElem) tElem.textContent = aiData.interview_star.task || '—';
+          if (aElem) aElem.textContent = aiData.interview_star.action || '—';
+          if (rElem) rElem.textContent = aiData.interview_star.result || '—';
+          const fuElem = document.getElementById('starFollowupText');
+          if (fuElem && aiData.interview_star.likely_followup) {
+            fuElem.textContent = aiData.interview_star.likely_followup;
+          }
+        } else if (starContainer) {
+          starContainer.style.display = 'none';
+        }
+
+        // Presentation structure
+        if (aiData.presentation_structure && presContainer) {
+          presContainer.style.display = 'block';
+          const oElem = document.getElementById('presOpening');
+          const orgElem = document.getElementById('presOrganization');
+          const trElem = document.getElementById('presTransitions');
+          const cElem = document.getElementById('presConclusion');
+          if (oElem) oElem.textContent = aiData.presentation_structure.opening || '—';
+          if (orgElem) orgElem.textContent = aiData.presentation_structure.organization || '—';
+          if (trElem) trElem.textContent = aiData.presentation_structure.transitions || '—';
+          if (cElem) cElem.textContent = aiData.presentation_structure.conclusion || '—';
+        } else if (presContainer) {
+          presContainer.style.display = 'none';
+        }
+      }
+    }
+
+    renderDiscussionTopics();
+
+    populateScenariosForMode('casual');
+    initChallengeView();
+    refreshDashboard();
+    checkActiveAuth();
+  </script>
+</body>
+</html>

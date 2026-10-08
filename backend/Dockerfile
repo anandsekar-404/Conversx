@@ -1,7 +1,6 @@
 # =============================================================================
 # ConversX Backend — Dockerfile
 # Multi-stage build: builder installs deps, runtime is lean.
-# CPU-only PyTorch to keep image size down (D-001).
 # Model weights are NEVER baked in — they live in Docker named volumes.
 # Target: linux/amd64 and linux/arm64 (built via QEMU in CI).
 # =============================================================================
@@ -23,12 +22,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy requirements first (layer caching)
 COPY requirements.txt .
 
-# Install CPU-only torch separately to avoid pulling CUDA wheels (~2 GB saved)
-# Then install the rest of the dependencies
+# Install Python production dependencies
 RUN pip install --no-cache-dir --upgrade pip wheel && \
-    pip install --no-cache-dir \
-        torch==2.5.1 \
-        --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements.txt
 
 # ---------------------------------------------------------------------------
@@ -56,7 +51,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY --chown=conversx:conversx . .
 
-# Pre-create temp audio, model cache, and HuggingFace cache directories with non-root ownership
+# Pre-create temp audio, model cache, and cache directories with non-root ownership
 # so Docker volume initialization preserves non-root write permissions (Gate A, D-002)
 RUN mkdir -p /tmp/conversx-audio /models/whisper /home/conversx/.cache/huggingface && \
     chown -R conversx:conversx /tmp/conversx-audio /models /home/conversx
