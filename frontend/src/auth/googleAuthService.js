@@ -302,11 +302,45 @@ export class GoogleAuthService {
   signOut() {
     this.token = null;
     this.user = null;
+    this.sessionExpired = false;
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('conversx_token');
       localStorage.removeItem('conversx_user');
     }
     this.notifyStateChange();
+  }
+
+  handleSessionExpired() {
+    this.token = null;
+    this.user = null;
+    this.sessionExpired = true;
+    this.sessionExpiredMessage = 'Session expired. Please sign in again.';
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('conversx_token');
+      localStorage.removeItem('conversx_user');
+    }
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+      try {
+        window.dispatchEvent(new CustomEvent('conversx:session-expired', {
+          detail: { message: this.sessionExpiredMessage }
+        }));
+      } catch (e) {}
+    }
+    this.notifyStateChange();
+    return { expired: true, message: this.sessionExpiredMessage };
+  }
+
+  async authenticatedFetch(url, options = {}) {
+    const opts = { ...options };
+    opts.headers = { ...(opts.headers || {}) };
+    if (this.token) {
+      opts.headers['Authorization'] = `Bearer ${this.token}`;
+    }
+    const res = await fetch(url, opts);
+    if (res.status === 401) {
+      this.handleSessionExpired();
+    }
+    return res;
   }
 }
 

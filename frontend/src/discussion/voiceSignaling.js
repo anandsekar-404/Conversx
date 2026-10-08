@@ -139,4 +139,51 @@ export class DiscussionVoiceCoordinator {
     this.isSpeaking = false;
     this.setConnectionState(ConnectionState.DISCONNECTED);
   }
+
+  getStatusMessage() {
+    switch (this.connectionState) {
+      case ConnectionState.CONNECTING:
+        return 'Connecting audio...';
+      case ConnectionState.CONNECTED:
+        return 'Audio connected';
+      case ConnectionState.RECONNECTING:
+        return 'Reconnecting...';
+      case ConnectionState.PERMISSION_DENIED:
+        return 'Microphone unavailable: permission denied';
+      case ConnectionState.UNSUPPORTED:
+        return 'Audio not supported in this browser';
+      case ConnectionState.DISCONNECTED:
+        return 'Connection lost';
+      case ConnectionState.IDLE:
+      default:
+        return 'Ready to connect';
+    }
+  }
+
+  async reconnect(maxRetries = 3, retryDelayMs = 1000) {
+    this.setConnectionState(ConnectionState.RECONNECTING);
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const ok = await this.initializeMicrophone();
+        if (ok) {
+          return true;
+        }
+      } catch (err) {
+        // Suppress raw error, preserve friendly recovery state
+      }
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, retryDelayMs * attempt));
+      }
+    }
+    this.setConnectionState(ConnectionState.DISCONNECTED);
+    return false;
+  }
+
+  handlePeerDisconnect(peerId) {
+    if (this.peerConnections.has(peerId)) {
+      const pc = this.peerConnections.get(peerId);
+      try { pc.close(); } catch (e) {}
+      this.peerConnections.delete(peerId);
+    }
+  }
 }

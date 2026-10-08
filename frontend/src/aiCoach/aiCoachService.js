@@ -10,7 +10,7 @@
 
 import { API_BASE_URL } from '../config.js';
 
-class AICoachService {
+export class AICoachService {
   constructor() {
     this.status = {
       openai: { connected: false, status: 'not_connected', masked_key: '', last_tested_at: null },
@@ -195,9 +195,9 @@ class AICoachService {
    * Client-side fallback coaching when backend / provider is offline.
    */
   _clientFallbackCoaching(transcript, scenario, metrics) {
-    const clarity = metrics.clarity || 80;
-    const filler = metrics.filler_control || 80;
-    const mode = (scenario.mode || 'casual').toLowerCase();
+    const clarity = (metrics && metrics.clarity) || 80;
+    const filler = (metrics && metrics.filler_control) || 80;
+    const mode = (typeof scenario === 'object' && scenario?.mode ? scenario.mode : typeof scenario === 'string' ? scenario : 'casual').toLowerCase();
 
     const strengths = [
         'Directly addressed the prompt with clear conceptual progression.',

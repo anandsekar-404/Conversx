@@ -1,6 +1,6 @@
 """
 ConversX Database Session & Connection Management.
-Connects to PostgreSQL in production and provides fallback/health checking.
+Connects to PostgreSQL in production with connection pooling and health checks.
 Gracefully handles lightweight host environments where SQLAlchemy is in Docker.
 """
 from __future__ import annotations
@@ -19,11 +19,21 @@ try:
     from app.models.entities import Base
 
     connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
-    engine = create_engine(
-        DATABASE_URL,
-        pool_pre_ping=True,
-        connect_args=connect_args,
-    )
+    engine_kwargs: dict[str, Any] = {
+        "pool_pre_ping": True,
+        "connect_args": connect_args,
+    }
+
+    # Production PostgreSQL connection pool configuration
+    if "postgres" in DATABASE_URL.lower():
+        engine_kwargs.update({
+            "pool_size": int(os.getenv("DB_POOL_SIZE", "10")),
+            "max_overflow": int(os.getenv("DB_MAX_OVERFLOW", "20")),
+            "pool_timeout": int(os.getenv("DB_POOL_TIMEOUT", "30")),
+            "pool_recycle": int(os.getenv("DB_POOL_RECYCLE", "1800")),
+        })
+
+    engine = create_engine(DATABASE_URL, **engine_kwargs)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     HAS_SQLALCHEMY = True
 except ImportError:
@@ -66,5 +76,16 @@ def check_db_health() -> bool:
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         return True
-    except Exception:
+    except Exception as e:
+        logger.warning(f"Database health check failed: {e}")
         return False
+
+
+def close_db_connections() -> None:
+    """Disposes the SQLAlchemy engine connection pool on application shutdown."""
+    if HAS_SQLALCHEMY and engine is not None:
+        try:
+            engine.dispose()
+            logger.info("Database connection pool cleanly disposed.")
+        except Exception as e:
+            logger.warning(f"Error disposing database engine: {e}")
