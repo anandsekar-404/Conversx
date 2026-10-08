@@ -18,6 +18,7 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import secrets
 import time
 from typing import Any, Dict, List, Optional
@@ -91,9 +92,13 @@ def create_access_token(
     username: str = "",
     expires_delta_minutes: Optional[int] = None,
     secret_key: Optional[str] = None,
+    conversx_user_id: Optional[str] = None,
+    onboarding_completed: bool = False,
+    display_name: Optional[str] = None,
+    avatar_url: Optional[str] = None,
 ) -> str:
     """
-    Generate an RFC 7519 compliant HS256 JWT access token.
+    Generate an RFC 7519 compliant HS256 JWT access token with ConversX identity claims.
     """
     secret = (secret_key or JWT_SECRET_KEY).encode("utf-8")
     now = int(time.time())
@@ -105,6 +110,10 @@ def create_access_token(
         "sub": str(user_id),
         "username": username or str(user_id),
         "role": role.upper(),
+        "c_uid": conversx_user_id,
+        "onb": bool(onboarding_completed),
+        "name": display_name or username or str(user_id),
+        "pic": avatar_url,
         "iss": JWT_ISSUER,
         "iat": now,
         "exp": exp,
@@ -165,13 +174,98 @@ def decode_access_token(token: str, secret_key: Optional[str] = None) -> Dict[st
 # ---------------------------------------------------------------------------
 # User Session & Ownership Checks
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Reserved ConversX User IDs & Validation
+# ---------------------------------------------------------------------------
+RESERVED_USER_IDS = {
+    "admin",
+    "administrator",
+    "support",
+    "system",
+    "official",
+    "conversx",
+    "moderator",
+    "security",
+    "api",
+    "root",
+    "help",
+    "guest",
+    "test",
+    "bot",
+    "superuser",
+    "staff",
+    "null",
+    "undefined",
+    "anonymous",
+}
+
+USER_ID_REGEX = re.compile(r"^[a-zA-Z0-9_]{3,20}$")
+
+
+def normalize_conversx_user_id(handle: str) -> str:
+    """Returns normalized lowercase ConversX User ID without leading @."""
+    if not handle:
+        return ""
+    clean = handle.strip()
+    if clean.startswith("@"):
+        clean = clean[1:]
+    return clean.lower()
+
+
+def validate_conversx_user_id(handle: str) -> tuple[bool, Optional[str]]:
+    """
+    Validates a proposed ConversX User ID.
+    Rules:
+    - 3 to 20 characters
+    - Letters, numbers, underscores only
+    - No spaces or special symbols
+    - Not in reserved names
+    Returns (is_valid, error_message).
+    """
+    if not handle or not isinstance(handle, str):
+        return False, "User ID cannot be empty."
+
+    clean = handle.strip()
+    if clean.startswith("@"):
+        clean = clean[1:]
+
+    if len(clean) < 3 or len(clean) > 20:
+        return False, "Use 3–20 letters, numbers, or underscores."
+
+    if not USER_ID_REGEX.match(clean):
+        return False, "Use 3–20 letters, numbers, or underscores (no spaces or special symbols)."
+
+    normalized = clean.lower()
+    if normalized in RESERVED_USER_IDS:
+        return False, "This User ID isn't available."
+
+    return True, None
+
+
 class UserSession:
-    """Represents an authenticated user identity and active roles."""
-    def __init__(self, user_id: str, username: str, role: str, email: Optional[str] = None):
+    """Represents an authenticated user identity, active roles, and ConversX public identity."""
+    def __init__(
+        self,
+        user_id: str,
+        username: str,
+        role: str,
+        email: Optional[str] = None,
+        conversx_user_id: Optional[str] = None,
+        onboarding_completed: bool = False,
+        display_name: Optional[str] = None,
+        avatar_url: Optional[str] = None,
+        google_subject: Optional[str] = None,
+    ):
         self.user_id = str(user_id)
         self.username = str(username)
         self.role = role.upper()
         self.email = email
+        self.conversx_user_id = conversx_user_id
+        self.onboarding_completed = bool(onboarding_completed)
+        self.display_name = display_name or username
+        self.avatar_url = avatar_url
+        self.google_subject = google_subject
 
     @property
     def is_admin(self) -> bool:
@@ -186,6 +280,10 @@ class UserSession:
             "username": self.username,
             "role": self.role,
             "email": self.email,
+            "conversx_user_id": self.conversx_user_id,
+            "onboarding_completed": self.onboarding_completed,
+            "display_name": self.display_name,
+            "avatar_url": self.avatar_url,
             "is_admin": self.is_admin,
         }
 
@@ -212,6 +310,13 @@ _IN_MEMORY_USERS: Dict[str, Dict[str, Any]] = {
         "hashed_password": hash_password("ConversXAdmin2026!"),
         "role": ROLE_ADMIN,
         "is_active": True,
+        "conversx_user_id": "admin_official",
+        "conversx_user_id_normalized": "admin_official",
+        "onboarding_completed": True,
+        "display_name": "ConversX Admin",
+        "avatar_url": None,
+        "google_subject": "google_sub_admin_001",
+        "email_verified": True,
         "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     },
     "guest_user": {
@@ -221,6 +326,13 @@ _IN_MEMORY_USERS: Dict[str, Dict[str, Any]] = {
         "hashed_password": hash_password("GuestPass123!"),
         "role": ROLE_USER,
         "is_active": True,
+        "conversx_user_id": "guest_speaker",
+        "conversx_user_id_normalized": "guest_speaker",
+        "onboarding_completed": True,
+        "display_name": "Guest Speaker",
+        "avatar_url": None,
+        "google_subject": "google_sub_guest_001",
+        "email_verified": True,
         "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     },
 }
@@ -270,8 +382,20 @@ try:
         user_id = payload.get("sub", "")
         role = payload.get("role", ROLE_USER)
         username = payload.get("username", user_id)
+        conversx_user_id = payload.get("c_uid") or payload.get("conversx_user_id")
+        onboarding_completed = payload.get("onb", False)
+        display_name = payload.get("name") or username
+        avatar_url = payload.get("pic")
 
-        return UserSession(user_id=user_id, username=username, role=role)
+        return UserSession(
+            user_id=user_id,
+            username=username,
+            role=role,
+            conversx_user_id=conversx_user_id,
+            onboarding_completed=onboarding_completed,
+            display_name=display_name,
+            avatar_url=avatar_url,
+        )
 
     def require_role(allowed_roles: List[str]):
         """Dependency factory to enforce role-based access control."""

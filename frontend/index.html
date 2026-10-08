@@ -1553,7 +1553,68 @@
         </div>
       </section>
 
-    </main>
+    
+    <!-- Unique ConversX User ID Onboarding Modal -->
+    <div id="modalOnboardingUserId" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="onboardingModalTitle">
+      <div class="modal-onboarding-dialog">
+        <div class="onboarding-step-badge">
+          <span>⚡</span> Step 2: Establish Identity
+        </div>
+
+        <div>
+          <h2 id="onboardingModalTitle" style="font-family: var(--font-display); font-size: 1.65rem; color: #fff; margin: 0.25rem 0 0.5rem 0;">
+            Create your ConversX ID
+          </h2>
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            This is your unique identity on ConversX. It will be seen by peers in Group Discussions and voice coaching sessions.
+          </p>
+        </div>
+
+        <div class="onboarding-input-group">
+          <label for="inputConversxHandle" class="form-label-gym" style="font-size: 0.8125rem;">
+            ConversX ID
+          </label>
+          <div class="handle-input-container">
+            <span class="handle-prefix">@</span>
+            <input type="text" id="inputConversxHandle" class="handle-input" placeholder="yourname" autocomplete="off" spellcheck="false" maxlength="20">
+            <div id="badgeHandleAvailability" class="handle-status-pill checking" style="display: none;">
+              Checking...
+            </div>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">
+            3–20 characters • Letters, numbers, and underscores only • Case-insensitive
+          </p>
+        </div>
+
+        <!-- Profile Preview Card -->
+        <div>
+          <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">
+            Your ConversX Identity Preview
+          </span>
+          <div class="card-onboarding-preview" style="margin-top: 0.4rem;">
+            <img id="previewAvatarImg" class="preview-avatar-img" src="" alt="Google Profile Avatar" style="display: none;">
+            <div id="previewAvatarFallback" class="preview-avatar-fallback">C</div>
+            <div class="preview-meta">
+              <div id="previewDisplayName" class="preview-display-name">ConversX Speaker</div>
+              <div id="previewHandleBadge" class="preview-handle-badge">@yourname</div>
+              <div class="preview-tag-verified">
+                <span>✓</span> Verified Google Identity
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="onboardingErrorMsg" style="color: var(--harmful-rose); font-size: 0.8125rem; display: none;"></div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+          <button id="btnReserveHandle" class="btn-gym-primary" style="flex: 1;" disabled>
+            <span>🚀</span> Reserve ID & Enter ConversX
+          </button>
+        </div>
+      </div>
+    </div>
+
+</main>
 
     <!-- Mobile Bottom Navigation Bar -->
     <nav class="mobile-nav-bar" aria-label="Mobile Navigation">
@@ -1608,6 +1669,24 @@
         <div class="auth-tabs-nav" role="tablist">
           <button id="btnTabLogin" class="auth-tab-btn active" role="tab" aria-selected="true">Sign In</button>
           <button id="btnTabRegister" class="auth-tab-btn" role="tab" aria-selected="false">Create Account</button>
+        </div>
+
+        <!-- Google Sign-In Action (Primary) -->
+        <div style="margin: 0.5rem 0 0.25rem 0;">
+          <button id="btnGoogleSignIn" class="btn-google-auth" type="button" aria-label="Continue with Google">
+            <svg class="google-icon-svg" viewBox="0 0 48 48">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+              <path fill="none" d="M0 0h48v48H0z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+        </div>
+
+        <div class="auth-divider-row">
+          <span>or sign in with password</span>
         </div>
 
         <!-- Login Form -->
@@ -1765,6 +1844,7 @@
 
     import { API_BASE_URL } from './src/config.js';
     import { aiCoachService } from './src/aiCoach/index.js';
+    import { googleAuthService } from './src/auth/index.js';
 
     import {
       DISCUSSION_TOPICS,
@@ -2531,25 +2611,192 @@
     const userAuthLabel = document.getElementById('userAuthLabel');
     const btnAuthSignOut = document.getElementById('btnAuthSignOut');
 
+    // Google Auth & Unique User ID Onboarding Elements
+    const btnGoogleSignIn = document.getElementById('btnGoogleSignIn');
+    const modalOnboardingUserId = document.getElementById('modalOnboardingUserId');
+    const inputConversxHandle = document.getElementById('inputConversxHandle');
+    const badgeHandleAvailability = document.getElementById('badgeHandleAvailability');
+    const previewAvatarImg = document.getElementById('previewAvatarImg');
+    const previewAvatarFallback = document.getElementById('previewAvatarFallback');
+    const previewDisplayName = document.getElementById('previewDisplayName');
+    const previewHandleBadge = document.getElementById('previewHandleBadge');
+    const btnReserveHandle = document.getElementById('btnReserveHandle');
+    const onboardingErrorMsg = document.getElementById('onboardingErrorMsg');
+
+    function openOnboardingModal(userData) {
+      if (!modalOnboardingUserId) return;
+      if (previewDisplayName) {
+        previewDisplayName.textContent = userData?.display_name || userData?.username || 'ConversX Speaker';
+      }
+      if (userData?.avatar_url && previewAvatarImg) {
+        previewAvatarImg.src = userData.avatar_url;
+        previewAvatarImg.style.display = 'block';
+        if (previewAvatarFallback) previewAvatarFallback.style.display = 'none';
+      } else if (previewAvatarFallback) {
+        if (previewAvatarImg) previewAvatarImg.style.display = 'none';
+        previewAvatarFallback.style.display = 'flex';
+        const initial = (userData?.display_name || userData?.username || 'C')[0].toUpperCase();
+        previewAvatarFallback.textContent = initial;
+      }
+      if (inputConversxHandle) inputConversxHandle.value = '';
+      if (previewHandleBadge) previewHandleBadge.textContent = '@yourname';
+      if (badgeHandleAvailability) badgeHandleAvailability.style.display = 'none';
+      if (onboardingErrorMsg) onboardingErrorMsg.style.display = 'none';
+      if (btnReserveHandle) {
+        btnReserveHandle.disabled = true;
+        btnReserveHandle.innerHTML = '<span>🚀</span> Reserve ID & Enter ConversX';
+      }
+      modalOnboardingUserId.classList.add('open');
+      setTimeout(() => {
+        if (inputConversxHandle) inputConversxHandle.focus();
+      }, 100);
+    }
+
     function checkActiveAuth() {
-      const token = localStorage.getItem('conversx_token');
-      const user = localStorage.getItem('conversx_user');
-      if (token && user) {
-        userAuthLabel.textContent = user;
-        document.getElementById('loggedUserDisplay').textContent = `Signed in as ${user}`;
+      const isAuth = googleAuthService.isAuthenticated();
+      const user = googleAuthService.getUser();
+
+      if (isAuth && user) {
+        if (!googleAuthService.isOnboardingCompleted()) {
+          // Incomplete onboarding: resume onboarding prompt
+          userAuthLabel.textContent = 'Finish ID Setup';
+          openOnboardingModal(user);
+        } else {
+          const publicHandle = googleAuthService.getPublicHandle();
+          userAuthLabel.textContent = publicHandle || user.display_name || user.username;
+          if (user.avatar_url) {
+            userAuthIcon.innerHTML = `<img src="${user.avatar_url}" class="auth-avatar-pill-img" alt="Avatar">`;
+          } else {
+            userAuthIcon.textContent = '👤';
+          }
+        }
+
+        const displayLabel = user.display_name || user.username;
+        const handleLabel = user.conversx_user_id ? ` (@${user.conversx_user_id})` : '';
+        document.getElementById('loggedUserDisplay').textContent = `Signed in as ${displayLabel}${handleLabel}`;
         formAuthLogin.style.display = 'none';
         formAuthRegister.style.display = 'none';
         btnTabLogin.style.display = 'none';
         btnTabRegister.style.display = 'none';
         loggedInUserCard.style.display = 'flex';
       } else {
-        userAuthLabel.textContent = 'Sign In';
+        userAuthLabel.textContent = 'Continue with Google';
+        userAuthIcon.textContent = '👤';
         formAuthLogin.style.display = 'flex';
         formAuthRegister.style.display = 'none';
         btnTabLogin.style.display = 'block';
         btnTabRegister.style.display = 'block';
         loggedInUserCard.style.display = 'none';
       }
+    }
+
+    if (btnGoogleSignIn) {
+      btnGoogleSignIn.addEventListener('click', async () => {
+        btnGoogleSignIn.disabled = true;
+        const originalContent = btnGoogleSignIn.innerHTML;
+        btnGoogleSignIn.innerHTML = '<span>Connecting to Google...</span>';
+        try {
+          const res = await googleAuthService.authenticateWithGoogle({
+            mock_sub: 'google_sub_chellamae_001',
+            mock_email: 'chellamae.voice@gmail.com',
+            mock_name: 'Chellamae Johnson',
+            mock_picture: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80'
+          });
+          authModal.classList.remove('open');
+          if (res.success) {
+            if (!res.data.onboarding_completed) {
+              openOnboardingModal(res.data);
+            } else {
+              checkActiveAuth();
+            }
+          } else {
+            alert(res.error || 'Google authentication could not be completed.');
+          }
+        } catch (err) {
+          console.error('Google Sign-In error:', err);
+        } finally {
+          btnGoogleSignIn.disabled = false;
+          btnGoogleSignIn.innerHTML = originalContent;
+        }
+      });
+    }
+
+    if (inputConversxHandle) {
+      inputConversxHandle.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (onboardingErrorMsg) onboardingErrorMsg.style.display = 'none';
+
+        if (!val) {
+          if (badgeHandleAvailability) badgeHandleAvailability.style.display = 'none';
+          if (previewHandleBadge) previewHandleBadge.textContent = '@yourname';
+          if (btnReserveHandle) btnReserveHandle.disabled = true;
+          return;
+        }
+
+        if (badgeHandleAvailability) {
+          badgeHandleAvailability.className = 'handle-status-pill checking';
+          badgeHandleAvailability.textContent = 'Checking availability...';
+          badgeHandleAvailability.style.display = 'inline-flex';
+        }
+
+        googleAuthService.debouncedCheckHandle(val, (result) => {
+          if (previewHandleBadge) {
+            previewHandleBadge.textContent = `@${result.handle || val}`;
+          }
+          if (badgeHandleAvailability) {
+            if (result.available) {
+              badgeHandleAvailability.className = 'handle-status-pill available';
+              badgeHandleAvailability.textContent = '✓ Available';
+              if (btnReserveHandle) btnReserveHandle.disabled = false;
+            } else if (result.status === 'reserved') {
+              badgeHandleAvailability.className = 'handle-status-pill reserved';
+              badgeHandleAvailability.textContent = '✕ This User ID is reserved';
+              if (btnReserveHandle) btnReserveHandle.disabled = true;
+            } else if (result.status === 'taken') {
+              badgeHandleAvailability.className = 'handle-status-pill taken';
+              badgeHandleAvailability.textContent = '✕ User ID already taken';
+              if (btnReserveHandle) btnReserveHandle.disabled = true;
+            } else {
+              badgeHandleAvailability.className = 'handle-status-pill invalid';
+              badgeHandleAvailability.textContent = result.message || '✕ Use 3–20 letters, numbers, or underscores';
+              if (btnReserveHandle) btnReserveHandle.disabled = true;
+            }
+            badgeHandleAvailability.style.display = 'inline-flex';
+          }
+        }, 250);
+      });
+    }
+
+    if (btnReserveHandle) {
+      btnReserveHandle.addEventListener('click', async () => {
+        const handle = inputConversxHandle ? inputConversxHandle.value.trim() : '';
+        if (!handle) return;
+
+        btnReserveHandle.disabled = true;
+        btnReserveHandle.innerHTML = '<span>⏳</span> Reserving ID...';
+
+        try {
+          const res = await googleAuthService.reserveHandle(handle);
+          if (res.success) {
+            modalOnboardingUserId.classList.remove('open');
+            checkActiveAuth();
+            refreshDashboard();
+          } else {
+            if (onboardingErrorMsg) {
+              onboardingErrorMsg.textContent = res.error || 'Could not reserve User ID.';
+              onboardingErrorMsg.style.display = 'block';
+            }
+          }
+        } catch (err) {
+          if (onboardingErrorMsg) {
+            onboardingErrorMsg.textContent = 'Network error reserving User ID. Please try again.';
+            onboardingErrorMsg.style.display = 'block';
+          }
+        } finally {
+          btnReserveHandle.disabled = false;
+          btnReserveHandle.innerHTML = '<span>🚀</span> Reserve ID & Enter ConversX';
+        }
+      });
     }
 
     btnOpenAuthModal.addEventListener('click', () => {
@@ -2643,8 +2890,7 @@
     });
 
     btnAuthSignOut.addEventListener('click', () => {
-      localStorage.removeItem('conversx_token');
-      localStorage.removeItem('conversx_user');
+      googleAuthService.signOut();
       checkActiveAuth();
       authModal.classList.remove('open');
     });
@@ -2774,12 +3020,12 @@
         onActiveSpeakerChange: (speakerId) => updateActiveSpeakerVisual(speakerId)
       });
 
-      // Add local user as Host
-      const localUsername = localStorage.getItem('conversx_user') || 'Marcus Vance';
+      // Add local user with public ConversX ID
+      const localHandle = googleAuthService.getPublicHandle() || '@chellamae';
       discRoom.addParticipant({
         id: 'user_local',
-        name: `${localUsername} (YOU)`,
-        role: 'Host / Systems Arch',
+        name: `${localHandle} (YOU)`,
+        role: 'Member / Participant',
         isLocal: true,
         isReady: true
       });

@@ -35,6 +35,16 @@ try:
         role = Column(String(20), default="user", nullable=False)
         is_active = Column(Boolean, default=True, nullable=False)
         is_banned = Column(Boolean, default=False, nullable=False)
+
+        # Google Account & ConversX Public Identity
+        google_subject = Column(String(255), unique=True, index=True, nullable=True)
+        email_verified = Column(Boolean, default=False, nullable=False)
+        display_name = Column(String(128), nullable=True)
+        avatar_url = Column(Text, nullable=True)
+        conversx_user_id = Column(String(64), nullable=True)  # Display casing
+        conversx_user_id_normalized = Column(String(64), unique=True, index=True, nullable=True)  # Lowercase unique
+        onboarding_completed = Column(Boolean, default=False, nullable=False)
+
         created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
         updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, nullable=False)
 

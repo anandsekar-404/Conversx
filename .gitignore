@@ -78,3 +78,9 @@ desktop.ini
 # Benchmark recordings & local run outputs (never commit)
 benchmark_audio/
 benchmark_results/
+
+# IDE & Agent workspace
+.agent/
+.agents/
+.gemini/
+.gsd/
